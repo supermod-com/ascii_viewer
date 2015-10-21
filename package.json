@@ -1,0 +1,21 @@
+{
+    "name": "ascii_viewer",
+    "description": "ansi viewer",
+    "version": "0.0.1",
+    "main": "index.html",
+    "author": {
+        "name": "Oliver Bachmann",
+        "email": "obachmann@ymail.com"
+    },
+    "keywords": [],
+    "licenses": {
+        "type": "MIT"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/asciibox/ascii_viewer.git"
+    },
+    "bugs": {
+        "url": "git://github.com/asciibox/ascii_viewer/issues"
+    }
+}
