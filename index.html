@@ -35,6 +35,7 @@
     <script src="fileuploader/fileuploader.js"></script>
 	<script src="scripts/interpreter.js"></script>
 	<script src="scripts/requestanimframe.js"></script>
+	<script src="scripts/escapes_modified.js"></script>
     <link rel="stylesheet" href="css/panel.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="fileuploader/fileuploader.css" type="text/css" media="screen" />
@@ -65,19 +66,20 @@
         
         codepage = new Codepage("images/CO_437_8x16.png", function() {
             
+			globalString=""; // Modified escapesjs line, only this one here
             setCanvasSize(document.getElementById("ansi"));
             setANSICanvasSize();
               
             globalContext = document.getElementById("ansi").getContext("2d");
             display = new Display();
             doClearScreen(false);
-            
+            escapesCursor = escapes({}); // Also modified
                 
                 
                 updateScrollbarX(0);
                 updateScrollbarY(0);
            
-          
+						
                       interpreter = new Interpreter("test.ans", display);
                       
                       initansicanvas();
