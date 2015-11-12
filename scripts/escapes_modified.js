@@ -105,7 +105,7 @@
         };
     }
 
-    function Canvas(width) {
+    /*function Canvas(width) {
         var canvas = document.createElement('canvas');
 
         canvas.width  = width;
@@ -123,8 +123,9 @@
         };
 
         return canvas;
-    }
+    }*/
 
+	/*
     function httpGet(url, binary, success, error) {
         var req = new XMLHttpRequest();
 
@@ -147,7 +148,7 @@
         }
 
         req.send(null);
-    }
+    }*/
 
     function parseIntArray(array) {
         var i = array.length;
@@ -167,7 +168,7 @@
         }
 
         // Canvas
-        this.canvas  = new Canvas(640);
+        this.canvas  = document.getElementById("ansi"); // was: new Canvas(1280);
         this.context = this.canvas.getContext('2d');
         this.image_data  = this.context.createImageData(8, 16);
 
@@ -387,7 +388,9 @@
                 default:
                     x = (cursor.column - 1) * 8;
                     y = (cursor.row + cursor.scrollback - 1) * 16;
-                    image_data = this.renderChar(charcode, foreground, background);
+                    
+					// Now here the writing must occur
+					image_data = this.renderChar(charcode, foreground, background);
                     this.context.putImageData(image_data, x, y);
 
                     if (cursor.column === 80) {
@@ -408,6 +411,123 @@
                     cursor.row--;
                 }
             }
+        },
+			// Maybe try your own version here - this is the original one
+			    modified_write3: function (text) {
+            var CR = 0x0d,
+                LF = 0x0a,
+                cursor = this,
+                image_data,
+                background,
+                foreground,
+                charcode,
+                x,
+                y,
+                i,
+                length;
+
+            foreground = this.getColor(this.foreground, this.flags & BRIGHT);
+            background = this.getColor(this.background);
+
+            for (i = 0, length = text.length; i < length; i++) {
+                charcode = text.charCodeAt(i) & 0xff;  // truncate to 8 bits
+                switch (charcode) {
+                case CR:
+                    cursor.column = 1;
+                    break;
+
+                case LF:
+                    cursor.row++;
+                    break;
+
+                default:
+                    x = (cursor.column - 1) * 8;
+                    y = (cursor.row + cursor.scrollback - 1) * 16;
+                    
+					// Now here the writing must occur
+					image_data = this.renderChar(charcode, foreground, background);
+                    this.context.putImageData(image_data, x, y);
+
+                    if (cursor.column === 80) {
+                        cursor.column = 1;
+                        cursor.row++;
+                    } else {
+                        cursor.column++;
+                    }
+                    break;
+                }
+
+// The value of 'row' represents current position relative to the top of the
+// screen and therefore cannot exceed 25. Vertical scroll past the 25th line
+// increments the scrollback buffer instead.
+
+                if (cursor.row === 26) {
+                    cursor.scrollback++;
+                    cursor.row--;
+                }
+            }
+        },//*,
+			modified_write2 : function (text) {
+
+		    var CR = 0x0d,
+                LF = 0x0a,
+                cursor = this,
+                image_data,
+                background,
+                foreground,
+                charcode,
+                x,
+                y,
+                i,
+                length;
+
+            foreground = this.foreground;
+            background = this.getColor(this.background);
+
+            for (i = 0, length = text.length; i < length; i++) {
+                charcode = text.charCodeAt(i); // & 0xff;  // truncate to 8 bits
+                switch (charcode) {
+                case CR:
+                    cursor.column = 1;
+                    break;
+
+                case LF:
+                    cursor.row++;
+                    break;
+
+                default:
+                   // x = (cursor.column - 1) * 8;
+                    // y = (cursor.row + cursor.scrollback - 1) * 16;
+                     x = (cursor.column - 1);
+					 y = (cursor.row + cursor.scrollback - 1);
+
+					// modified
+					// image_data = this.renderChar(charcode, foreground, background);
+                    // this.context.putImageData(image_data, x, y);
+
+					
+					// globalContext is = document.getElementById("ansi").getContext("2d");
+					codepage.drawChar(globalContext, charcode, foreground, background, x, y); // , transparent, storeCharacter, storeCharacterX) 
+
+                    if (cursor.column === 80) {
+                        cursor.column = 1;
+                        cursor.row++;
+                    } else {
+                        cursor.column++;
+                    }
+                    break;
+                }
+				
+
+// The value of 'row' represents current position relative to the top of the
+// screen and therefore cannot exceed 25. Vertical scroll past the 25th line
+// increments the scrollback buffer instead.
+
+                if (cursor.row === 26) {
+                    cursor.scrollback++;
+                    cursor.row--;
+                }
+            }
         }
 
     };
@@ -418,7 +538,7 @@
         }
 
         // Canvas
-        this.canvas  = new Canvas(1280);
+        this.canvas  = document.getElementById("ansi"); // was: new Canvas(1280);
         this.context = this.canvas.getContext('2d');
         this.image_data  = this.context.createImageData(8, 16);
 
@@ -495,12 +615,11 @@
         }
     };
 
-    escapes = function (url, callback, options) {
-        var property, cursor;
+    // Modified to create cursor object
+    escapes = function (options) { // (url, callback, options) {
 
-        switch (url.substr(-3).toLowerCase()) {
-        case "ans":
-            cursor = new Cursor();
+      
+            var cursor = new Cursor();
             options = options || {};
             for (property in options) {
                 cursor[property] = options[property];
@@ -510,28 +629,10 @@
                 cursor.palette[BLACK][3] = 0;
             }
 
-            httpGet(url, false, function (data) {
-                cursor.parse(data, {
-                    onEscape    : cursor.escape,
-                    onLiteral   : cursor.write,
-                    onComplete  : callback
-                });
-            });
-            break;
-        case "bin":
-            cursor = new Bin();
+            return cursor;
+        
+	}
 
-            httpGet(url, true, function (data) {
-                cursor.parse(data, {
-                    onComplete : callback
-                });
-            });
-            break;
-        }
-
-
-        return cursor;
-    };
 
     escapes.Cursor = Cursor;
     global.escapes = escapes;

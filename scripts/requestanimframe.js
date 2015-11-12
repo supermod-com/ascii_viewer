@@ -27,8 +27,6 @@ var scrollUp = 0;
 var scrollLeft = 0;
 var scrollRight = 0;
 
-
-
 var bps = 57600;
 
 var charsAtOnce = 99999;
@@ -176,18 +174,32 @@ function render() {
 
     if (globalPos < globalBuffer.length)
     {
-        while ((globalPos < globalBuffer.length) && (counter < charsAtOnce)) {
+		var string = "";
+        while ((globalPos < globalBuffer.length) ) { // && (counter < charsAtOnce)) {
 
             counter++;
 
-            var j, code, values;
+            /*var j, code, values;
 
             ctx = document.getElementById("ansi").getContext("2d");
 
+*/
+			code = globalBuffer[globalPos++];
+			escapeCode = String.fromCharCode(code);
+			globalString+=escapeCode;
 
-            code = globalBuffer[globalPos++];
+		}
+
+		
+			  escapesCursor.parse(globalString, {
+                    onEscape    : escapesCursor.escape,
+                    onLiteral   : escapesCursor.modified_write2,
+                    onComplete  : function() { globalBuffer = new Uint8Array(); globalPos = 0; counter=0; }
+                });
+		
 
 
+/*
 
             if (globalEscaped) {
 
@@ -304,14 +316,25 @@ function render() {
                 }
             }
 
-
+	
 
         }
         //globalContext = document.getElementById("ansi").getContext("2d");
 
+	*/
 
-        globalContext.drawImage(globalDisplay.canvas, 0, 0);
+
+       // globalContext.drawImage(globalDisplay.canvas, 0, 0);
     }
+
+	
+
+// The value of 'row' represents current position relative to the top of the
+// screen and therefore cannot exceed 25. Vertical scroll past the 25th line
+// increments the scrollback buffer instead.
+
+          
+
 
 }
 
