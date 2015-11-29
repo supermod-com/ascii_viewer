@@ -1,7 +1,7 @@
 //
 //                                                   _)
 //     _ \   __|   __|   _` |  __ \    _ \   __|     |   __|
-//     __/ \__ \  (     (   |  |   |   __/ \__ \     | \__ \
+//     __/ \__ \  (     (   |  |   |   __/ \__ \     | \__ \   _MODIFIED!!!JS
 //   \___| ____/ \___| \__,_|  .__/  \___| ____/ _)  | ____/
 //                            _|                 ___/
 //
@@ -341,6 +341,7 @@
                             break;
                         case 3:
                             this.foreground = arg - 30;
+					
                             break;
                         case 4:
                             this.background = arg - 40;
@@ -482,7 +483,7 @@
                 length;
 
             foreground = this.foreground;
-            background = this.getColor(this.background);
+            background = this.background;
 
             for (i = 0, length = text.length; i < length; i++) {
                 charcode = text.charCodeAt(i); // & 0xff;  // truncate to 8 bits
@@ -504,12 +505,27 @@
 					// modified
 					// image_data = this.renderChar(charcode, foreground, background);
                     // this.context.putImageData(image_data, x, y);
+					console.log("FOREGROUND:"+foreground);
+					console.log("BACKGROUND:"+background);
 
+					// 1 = blue
+					// 2 = green
+					// 3 = cyan
+					// 4 = red
+					// 5 = purple
+					// 6 = brown
+					// 7 = green
+					// 8 = light blue
+					// 9 = light green
+					// 10 = light cyan
+					// 11 = light red
+					// 12 = light purple
+					// 13 = yellow
+					// 14 = white
 					
 					// globalContext is = document.getElementById("ansi").getContext("2d");
 					codepage.drawChar(globalContext, charcode, foreground, background, x, y); // , transparent, storeCharacter, storeCharacterX) 
-
-                    if (cursor.column === 80) {
+					if (cursor.column === 80) {
                         cursor.column = 1;
                         cursor.row++;
                     } else {
