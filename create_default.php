@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+ /** This is just to create a default test.ans in case you upload this somewhere and the escape codes of test.ans are wrong, a new test.ans gets created from a binary 0-1 file **/
 if (!is_dir("uploads")) {
     mkdir("uploads");
 }
@@ -29,7 +30,7 @@ $string = file_get_contents("default.txt");
 
 $f=fopen("test.ans", "w");
 
-include("subs.php");
+include("subs.php"); // This is also used somewhere else, therefore it's in subs.php
 
 echo "test.ans written";
 ?>

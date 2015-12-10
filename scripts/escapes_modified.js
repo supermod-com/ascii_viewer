@@ -14,6 +14,8 @@
 
 // greetz to deniz.
 
+/** Please only take a look at modified_write2 which makes a call to drawChar **/
+
 /*jslint forin: true, bitwise: true, browser: true, plusplus: true, regexp: true */
 
 (function (global) {

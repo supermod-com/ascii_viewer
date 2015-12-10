@@ -29,6 +29,7 @@ var scrollRight = 0;
 
 var bps = 57600;
 
+/** This is just some fancy speed stuff for timeout. Check if this can get made workable again by changing the value to something real and enabling charsAtOnce below **/
 var charsAtOnce = 99999;
 if (bps == 300)
     charsAtOnce = 20;
@@ -50,8 +51,8 @@ var globalPos = 0;
 // usage:
 // instead of setInterval(render, 16) ....
 
-
 // shim layer with setTimeout fallback
+// This makes requestanimframe.js get called all the time
 window.requestAnimFrame = (function() {
     return  window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
@@ -67,18 +68,14 @@ window.requestAnimFrame = (function() {
     render();
 })();
 
-function getValues() {
-    return escapeCode.substr(1, escapeCode.length - 2).split(";").map(function(value) {
-        var parsedValue;
-        parsedValue = parseInt(value, 10);
-        return isNaN(parsedValue) ? 1 : parsedValue;
-    });
-}
 
+/** This function gets always called **/
 function render() {
 
-    if (scrollDown) {
+	/** This are global variables. When they get set somewhere, i.e. when scrolling occurs, this gets called. This behaves very much like a setTimeout, so the other functions hopefully are not lacking timeouts **/
+    if (scrollDown) { // Scrolling down means the scrollbar scrolls down. The canvas moves up.
         while (scrollDown>0) {
+			// Hide the current cursor
             showCharacter(false);
         firstLine++;
         var startX = 0;
@@ -88,32 +85,39 @@ function render() {
 
         var screenWidth = canvasCharacterHeight;
 
+		// Scroll down by copying a whole region
         var imgData = ctx.getImageData(startX, startY, window_innerWidth - canvasCharacterWidth, window_innerHeight - canvasCharacterHeight - 1);
         ctx.putImageData(imgData, 0, 0);
 
         drawLine(visibleHeight - scrollBarYShown + firstLine - 1, (visibleHeight - scrollBarYShown) - 1);
-
-        updateScrollbarY(1);
+		// Since the canvas moves 
+        updateScrollbarY(1); // parameter: drawTopBlackside
         scrollDown--;
         }
     } else
-    if (scrollUp) {
+    if (scrollUp) { // Scrolling up means the scrollbar scrolls up. The canvas moves down.
         while (scrollUp>0) {
+			// Hide the current cursor
             showCharacter(false);
         firstLine--;
         var startX = 0;
         var startY = 0;
-        var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth));
-        var window_innerHeight = (visibleHeight - scrollBarYShown) * (canvasCharacterHeight);
+        var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth)); // Screen width without subtracting any character width, which is not needed
+        var window_innerHeight = (visibleHeight - scrollBarYShown) * (canvasCharacterHeight); // We're scrolling up. So this is 
+
+		// Scroll up by copying a whole region
         var imgData = ctx.getImageData(startX, startY, window_innerWidth - canvasCharacterWidth, window_innerHeight - canvasCharacterHeight);
         ctx.putImageData(imgData, 0, canvasCharacterHeight);
+
+		// Now that we have moved everything, we need to redraw the first line. Redrawing the first line means that the first line is not correct.
         drawLine(firstLine, 0);
-        updateScrollbarY(0);
+        updateScrollbarY(0); // parameter: drawTopBlackside
         scrollUp--;
         }
     } else
     if (scrollLeft) {
         while (scrollLeft>0) {
+			 // Hide the current cursor
              showCharacter(false);
         leftLine--;
         var startX = 0;
@@ -121,24 +125,27 @@ function render() {
         var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth));
         var window_innerHeight = (visibleHeight * (canvasCharacterHeight));
         console.log("startX:" + startX + " window_innerWidth:" + window_innerWidth);
+		// Move a whole region
         var imgData = ctx.getImageData(0, 0, window_innerWidth - canvasCharacterWidth - canvasCharacterWidth, window_innerHeight);
         ctx.putImageData(imgData, canvasCharacterWidth, 0);
         drawVerticalLine(leftLine, 0);
 
-        updateScrollbarX(0);
+        updateScrollbarX(0); // parameter: drawLeftBlackside
         scrollLeft--;
         }
     } else
-    if (scrollRight) {
+    if (scrollRight) { // Scrolling right means the scrollbar moves the the right. The canvas moves to the left side.
     
         while (scrollRight>0) {
+			     // Hide the current cursor
                  showCharacter(false);
         leftLine++;
-        var startX = canvasCharacterWidth;
+        var startX = canvasCharacterWidth; // maybe 8 pixel
 
         var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth));
         var window_innerHeight = (visibleHeight * (canvasCharacterHeight));
         console.log("startX:" + startX + " window_innerWidth:" + window_innerWidth);
+		// Move a whole region
         var imgData = ctx.getImageData(startX, 0, window_innerWidth - startX - startX, window_innerHeight);
         ctx.putImageData(imgData, 0, 0);
 
@@ -146,10 +153,11 @@ function render() {
         console.log("visibleWidth:" + visibleWidth);
         drawVerticalLine(visibleWidth + leftLine - 2, visibleWidth - 2);
 
-        updateScrollbarX(1);
+        updateScrollbarX(1); // parameter: drawLeftBlackside
         scrollRight--;
         }
     } else
+	// If doRedraw gets set somewhere, i.e. inside the parser, the whole canvas gets redrawn by drawing characters.
     if (doRedraw) {
         var redrawY = 0;
         while (redrawY < visibleHeight - 1)
@@ -172,6 +180,8 @@ function render() {
 
     var counter = 0;
 
+	// This gets regularly checked
+	// If there's inside the queue for us, it gets worked on
     if (globalPos < globalBuffer.length)
     {
 		var string = "";
@@ -179,161 +189,24 @@ function render() {
 
             counter++;
 
-            /*var j, code, values;
-
-            ctx = document.getElementById("ansi").getContext("2d");
-
-*/
 			code = globalBuffer[globalPos++];
 			escapeCode = String.fromCharCode(code);
-			globalString+=escapeCode;
-
+			globalString+=escapeCode; // globalString also must get reset!!!
 		}
 
 		
 			  escapesCursor.parse(globalString, {
                     onEscape    : escapesCursor.escape,
                     onLiteral   : escapesCursor.modified_write2,
-                    onComplete  : function() { globalBuffer = new Uint8Array(); globalPos = 0; counter=0; }
+                    onComplete  : function() { 
+						// Make sure globalBuffer does not get too long. You have read correctly, globalBuffer must get reset. It's not sure this works.
+						globalBuffer = new Uint8Array(); 
+						globalPos = 0; 
+						counter=0; 
+						}
                 });
 		
 
-
-/*
-
-            if (globalEscaped) {
-
-                escapeCode += String.fromCharCode(code);
-                if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122)) {
-                    globalEscaped = false;
-                    values = getValues();
-                    if (escapeCode.charAt(0) === "[") {
-                        switch (escapeCode.charAt(escapeCode.length - 1)) {
-                            case "A":
-                                globalDisplay.up(values[0]);
-                                break;
-                            case "B":
-                                globalDisplay.down(values[0]);
-                                break;
-                            case "C":
-                                globalDisplay.forward(values[0]);
-                                break;
-                            case "D":
-                                globalDisplay.back(values[0]);
-                                break;
-                            case "H":
-                                if (values.length === 1) {
-                                    globalDisplay.setPos(1, Math.min(values[0]));
-                                } else {
-                                    globalDisplay.setPos(values[1], values[0]);
-                                }
-                                break;
-                            case "J":
-                                if (values[0] === 2) {
-                                    globalDisplay.clearScreen();
-                                }
-                                break;
-                            case "K":
-                                globalDisplay.clearToEndOfLine();
-                                break;
-                            case "m":
-                                var j = 0;
-                                while (j < values.length) {
-                                    if (values[j] >= 30 && values[j] <= 37) {
-                                        globalDisplay.setForeground(values[j] - 30);
-                                    } else if (values[j] >= 40 && values[j] <= 47) {
-                                        globalDisplay.setBackground(values[j] - 40);
-                                    } else if (values[j] == 48) { // background, 256colors
-                                        // alert("bg:"+values);
-                                        myvalues = String(values);
-                                        //alert(myvalues.substring(5));
-                                        var color = myvalues.substring(5);
-                                        j = j + 2;
-
-                                        globalDisplay.setBackground(color);
-                                    } else if (values[j] == 38) { // foreground, 256colors
-                                        //alert("fg:"+values);
-                                        myvalues = String(values);
-                                        var color = myvalues.substring(5);
-                                        j = j + 2;
-                                        globalDisplay.setForeground(color);
-                                    } else {
-                                        switch (values[j]) {
-                                            case 0:
-                                                globalDisplay.resetAttributes();
-                                                break;
-                                            case 1:
-                                                globalDisplay.setBold(true);
-                                                break;
-                                            case 5:
-                                                break;
-                                            case 7:
-                                                globalDisplay.setInverse(true);
-                                                break;
-                                            case 22:
-                                                globalDisplay.setBold(false);
-                                                break;
-                                            case 27:
-                                                globalDisplay.setInverse(false);
-                                                break;
-                                            case 39:
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                    }
-
-                                    j++;
-                                }
-                                break;
-                            case "s":
-                                globalDisplay.savePosition();
-                                break;
-                            case "u":
-                                globalDisplay.restorePosition();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    escapeCode = "";
-                }
-            } else {
-
-                if (code === 27 && globalBuffer[globalPos] === 0x5B) {
-                    globalEscaped = true;
-                } else if (code === 13 && globalBuffer[globalPos] === 10) {
-                    ++globalPos;
-                    if (globalDisplay.newLine()) {
-                        //globalI = globalI + 1;
-                    }
-                } else {
-
-
-                    if (globalDisplay.drawChar(code)) {
-                        //globalI = globalI + 1;
-                    }
-                }
-            }
-
-	
-
-        }
-        //globalContext = document.getElementById("ansi").getContext("2d");
-
-	*/
-
-
-       // globalContext.drawImage(globalDisplay.canvas, 0, 0);
-    }
-
-	
-
-// The value of 'row' represents current position relative to the top of the
-// screen and therefore cannot exceed 25. Vertical scroll past the 25th line
-// increments the scrollback buffer instead.
-
-          
 
 
 }

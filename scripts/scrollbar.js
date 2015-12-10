@@ -20,9 +20,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+/** This contains the position of the scrollbars as real coordinate values in scrollPosY and scrollPosX as well as functionality to redraw the scrollbars.
+    Functionality for listening to the scrollbar is in app.js in initansicanvas() **/
+
 var scrollPosY = 0;
 var scrollPosX = 0;
 
+// This is a handy function to draw a certain line Y starting at X = 0 going up to how many x characters are inside the y index/coordinate **/
 function drawLine(fromRealY, toCursorY) {
        for (var x = 0; x < screenCharacterArray[fromRealY].length; x++) {
            var charArray = screenCharacterArray[fromRealY][x];
@@ -33,6 +37,7 @@ function drawLine(fromRealY, toCursorY) {
        }
    }
    
+   /** This is used when scrolling horizontally **/
    function drawVerticalLine(fromRealX, toCursorX) {
        for (var y = 0; y < screenCharacterArray.length; y++) {
            var charArray = screenCharacterArray[y][fromRealX];
@@ -43,6 +48,7 @@ function drawLine(fromRealY, toCursorY) {
        }
    };
   
+  /** This redraws the vertial scrollbar **/
   function updateScrollbarY(drawTopBlackside, offsetY) {
        
        if (typeof(offsetY)=="undefined") offsetY=0;
@@ -61,6 +67,7 @@ function drawLine(fromRealY, toCursorY) {
                 
        var context = document.getElementById("ansi").getContext("2d");
        
+	   // Also draw the black region because it might have changed on top of the scrollbar
        if ( (drawTopBlackside==1) || (drawTopBlackside==2) ) {
             context.beginPath();
             context.rect(myScrollPosX+1, 0, 2*canvasCharacterWidth, myScrollPosY+offsetY);
@@ -79,6 +86,7 @@ function drawLine(fromRealY, toCursorY) {
        context.strokeStyle = 'black';
        context.stroke();
        
+	   // We can also do this afterwards
         if ( (drawTopBlackside==0) || (drawTopBlackside==2) ) {
             context.beginPath();
             context.rect(myScrollPosX+1, myScrollPosY+scrollBarHeight+offsetY, 2*canvasCharacterWidth, window_innerHeight-(myScrollPosY+scrollBarHeight));
@@ -92,6 +100,7 @@ function drawLine(fromRealY, toCursorY) {
        
    }
    
+   /** This redraws the horizontal scrollbar **/
    function updateScrollbarX(drawLeftBlackside, offsetX) {
        
        if (typeof(offsetX)=="undefined") offsetX=0;

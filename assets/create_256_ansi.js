@@ -131,6 +131,7 @@ function h2d(h) {return parseInt(h,16);}
             return colorCanvas(createCanvas(width * characterWidth, height * characterHeight), 0, false);
         }
 
+		/** This was used from within codepagedisplaxy.js, line 309. The escape.js library should handle scrolling for us, however there might be situation in which codepagedisplay.js 309 needs to get re-enabled to deliver proper results **/
         function scrollDisplay(ctx, canvas) {
             ctx.drawImage(canvas, 0, characterHeight, canvas.width, canvas.height - characterHeight * 2, 0, 0, canvas.width, canvas.height - characterHeight * 2);
             ctx.fillStyle = "black";
