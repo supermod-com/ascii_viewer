@@ -182,6 +182,7 @@ function render() {
 
 	// This gets regularly checked
 	// If there's inside the queue for us, it gets worked on
+	// This might start only from time to time. Then hen esapesCursor.parse has finished parsing. Should the escape.js get implemented differently so more often parsing takes place? I think it's okay this way.
     if (globalPos < globalBuffer.length)
     {
 		var string = "";
@@ -206,7 +207,7 @@ function render() {
 						}
                 });
 		
-
+	}
 
 
 }
