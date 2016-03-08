@@ -162,7 +162,7 @@ function render() {
     } else
 	// If doRedraw gets set somewhere, i.e. inside the parser, the whole canvas gets redrawn by drawing characters.
     if (doRedraw) {
-
+		doClearScreen(false);
         var redrawY = 0;
         while (redrawY < visibleHeight - 1)
         {
