@@ -13,7 +13,7 @@
 //  See https://github.com/atdt/escapes.js/blob/master/LICENSE
 
 // greetz to deniz.
-
+//var prevy = 0;
 /** Please only take a look at modified_write2 which makes a call to drawChar **/
 
 /*jslint forin: true, bitwise: true, browser: true, plusplus: true, regexp: true */
@@ -272,6 +272,7 @@
 
             do {
                 pos = re.lastIndex;
+                //if (pos%100==0) alert(pos+"/"+buffer.length);
                 match = re.exec(buffer);
                 if (match !== null) {
                     if (match.index > pos) {
@@ -282,6 +283,7 @@
                     options.onEscape.call(this, opcode, args);
                 }
             } while (re.lastIndex !== 0);
+
 
             if (pos < buffer.length) {
                 options.onLiteral.call(this, buffer.slice(pos));
@@ -507,8 +509,6 @@
 					// modified
 					// image_data = this.renderChar(charcode, foreground, background);
                     // this.context.putImageData(image_data, x, y);
-					console.log("FOREGROUND:"+foreground);
-					console.log("BACKGROUND:"+background);
 
 					// 1 = blue
 					// 2 = green
@@ -525,7 +525,11 @@
 					// 13 = yellow
 					// 14 = white
 					
+					//if (prevy!=y) alert(y);
+
+					//prevy = y;
 					// globalContext is = document.getElementById("ansi").getContext("2d");
+					
 					codepage.drawChar(globalContext, charcode, foreground, background, x, y); // , transparent, storeCharacter, storeCharacterX) 
 					if (cursor.column === 80) {
                         cursor.column = 1;

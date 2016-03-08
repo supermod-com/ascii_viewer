@@ -183,10 +183,10 @@ function render() {
 	// This gets regularly checked
 	// If there's inside the queue for us, it gets worked on
 	// This might start only from time to time. Then hen esapesCursor.parse has finished parsing. Should the escape.js get implemented differently so more often parsing takes place? I think it's okay this way.
-    if (globalPos < globalBuffer.length)
+   /* if (globalPos < globalBuffer.length)
     {
 		var string = "";
-        while ((globalPos < globalBuffer.length) ) { // && (counter < charsAtOnce)) {
+        if ((globalPos < globalBuffer.length) ) { // && (counter < charsAtOnce)) {
 
             counter++;
 
@@ -195,19 +195,9 @@ function render() {
 			globalString+=escapeCode; // globalString also must get reset!!!
 		}
 
+		//alert(globalString.length);
 		
-			  escapesCursor.parse(globalString, {
-                    onEscape    : escapesCursor.escape,
-                    onLiteral   : escapesCursor.modified_write2,
-                    onComplete  : function() { 
-						// Make sure globalBuffer does not get too long. You have read correctly, globalBuffer must get reset. It's not sure this works.
-						globalBuffer = new Uint8Array(); 
-						globalPos = 0; 
-						counter=0; 
-						}
-                });
-		
-	}
+	}*/
 
 
 }

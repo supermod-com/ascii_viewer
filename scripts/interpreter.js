@@ -20,6 +20,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+function ab2str(buf) {
+  return String.fromCharCode.apply(null, new Uint8Array(buf));
+}
 
 function Interpreter(url, display) {
         var http, buffer, pos, escaped, escapeCode;
@@ -39,7 +42,20 @@ function Interpreter(url, display) {
 					escapeCode = "";
 					globalEscaped = false;
 					globalDisplay = display;
-                    globalBuffer = new Uint8Array(http.response);
+                    globalString = ab2str(http.response);
+                    alert(globalString.length);
+					escapesCursor.parse(globalString, {
+                    onEscape    : escapesCursor.escape,
+                    onLiteral   : escapesCursor.modified_write2,
+                    onComplete  : function() { 
+						// Make sure globalBuffer does not get too long. You have read correctly, globalBuffer must get reset. It's not sure this works.
+						
+						globalBuffer = new Uint8Array(); 
+						globalPos = 0; 
+						counter=0; 
+						}
+                	});
+
                    
                 } else {
                     throw ("Could not retrieve: " + url);

@@ -105,12 +105,16 @@ function Codepage(codepageUrl, callback) {
                         
 							// This are checks, otherwise the browser hangs. If it's more efficient to do a try catch then that's okay too.
                             if (typeof(screenCharacterArray[realY])=="undefined") {
-                                console.log("Error: Line "+y+" is undefined (out of range error)");
-                            } else
-                            if (typeof(screenCharacterArray[realY][x])=="undefined") {
-                                console.log("Error: x value of ["+y+"]["+x+"] is undefined (out of range error)");
-                            } else if ( (typeof(storeCharacter)=="undefined") || (storeCharacter==true) ) {
+                                screenCharacterArray[realY]=new Array();
+                                totalVisibleHeight=realY;
                                 screenCharacterArray[realY][realX]=charArray;
+                                
+                                //console.log("Array "+realY);
+                                
+                            } else
+                            if ( (typeof(storeCharacter)=="undefined") || (storeCharacter==true) ) {
+                                screenCharacterArray[realY][realX]=charArray;
+                                //console.log("Array 2 "+realY+" "+realX);
                             } 
                         }
 
@@ -176,8 +180,11 @@ function Codepage(codepageUrl, callback) {
                 if (y>=yStart-1) {
                  
 						// Get the character from the array
+						if (typeof(screenCharacterArray[originY])=="undefined") return;
+						if (typeof(screenCharacterArray[originY][originX])=="undefined") return;
                         var charArray = screenCharacterArray[originY][originX];
 						// This is how we read the properties of the specified character at x and y position
+						
                         asciiCode=charArray[0];
                         foreground=charArray[1];
                         background=charArray[2];

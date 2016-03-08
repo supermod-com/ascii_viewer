@@ -130,7 +130,6 @@
         
     function clearWholeScreen() 
     {
-        console.log("clearScreen");
        if (confirm('Are you sure?')) {
           doClearScreen(true);
         }
@@ -260,7 +259,7 @@
                         copyMode=false;
                     }
                     
-                    if (waitingforDoubleclick==false) {
+                   /* if (waitingforDoubleclick==false) {
                         waitingforDoubleclick = true;
                         clearTimeout(doubleclickInterval);
                         doubleclickInterval = setTimeout(function() { waitingforDoubleclick=false; }, 300);
@@ -268,7 +267,7 @@
                     } else {
                         
                         showPanel();
-                    }
+                    }*/
                     
                     mouseDown=true;
                     mouseMove(ansicanvas, e);
@@ -306,7 +305,6 @@
             
                 ansicanvas.addEventListener('mousemove', function(e) {
                   
-                   console.log("mouseMove scrollbar:"+mouseMove);
                    if (movingY==true)
                    {
                        var mouse = getMousePos(ansicanvas, e);
@@ -433,12 +431,14 @@
                 
                      
                      var charArray = screenCharacterArray[y][x];
-                     asciiCode=charArray[0];
-                     foreground=charArray[1];
-                     background=charArray[2];
+                     if (charArray!=undefined) {
+            	         asciiCode=charArray[0];
+        	             foreground=charArray[1];
+    	                 background=charArray[2];
                     
                     
-                     codepage.drawChar(ctx, asciiCode, foreground, background, x, y, false);
+	                     codepage.drawChar(ctx, asciiCode, foreground, background, x, y, false);
+                     }
                      
                 }
             }
