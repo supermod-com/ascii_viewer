@@ -58,6 +58,7 @@ function drawLine(fromRealY, toCursorY) {
        var scrollBarHeight = (visibleHeight/totalVisibleHeight)*window_innerHeight;
     
         myScrollPosY = (firstLine / totalVisibleHeight)*window_innerHeight;
+        console.log("myScrollPosY:"+myScrollPosY);
        if (myScrollPosY+offsetY<0) {
            myScrollPosY = -offsetY; 
        } else

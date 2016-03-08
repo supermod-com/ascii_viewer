@@ -107,6 +107,7 @@ function Codepage(codepageUrl, callback) {
                             if (typeof(screenCharacterArray[realY])=="undefined") {
                                 screenCharacterArray[realY]=new Array();
                                 totalVisibleHeight=realY;
+                                height=realY;
                                 screenCharacterArray[realY][realX]=charArray;
                                 
                                 //console.log("Array "+realY);

@@ -74,6 +74,7 @@ function render() {
 
 	/** This are global variables. When they get set somewhere, i.e. when scrolling occurs, this gets called. This behaves very much like a setTimeout, so the other functions hopefully are not lacking timeouts **/
     if (scrollDown) { // Scrolling down means the scrollbar scrolls down. The canvas moves up.
+		alert("SCROLLDOWN");
         while (scrollDown>0) {
 			// Hide the current cursor
             showCharacter(false);
@@ -96,6 +97,7 @@ function render() {
         }
     } else
     if (scrollUp) { // Scrolling up means the scrollbar scrolls up. The canvas moves down.
+    	alert("SCROLLUP");
         while (scrollUp>0) {
 			// Hide the current cursor
             showCharacter(false);
@@ -116,6 +118,7 @@ function render() {
         }
     } else
     if (scrollLeft) {
+    	alert("SCROLLLEFT");
         while (scrollLeft>0) {
 			 // Hide the current cursor
              showCharacter(false);
@@ -135,7 +138,7 @@ function render() {
         }
     } else
     if (scrollRight) { // Scrolling right means the scrollbar moves the the right. The canvas moves to the left side.
-    
+    alert("SCROLLRIGHT");
         while (scrollRight>0) {
 			     // Hide the current cursor
                  showCharacter(false);
@@ -159,13 +162,14 @@ function render() {
     } else
 	// If doRedraw gets set somewhere, i.e. inside the parser, the whole canvas gets redrawn by drawing characters.
     if (doRedraw) {
+
         var redrawY = 0;
         while (redrawY < visibleHeight - 1)
         {
-
+			//alert(visibleYStart);
             redrawX = 0;
             while (redrawX < visibleWidth - 1) {
-
+				console.log("visibleYStart:"+visibleYStart);
                 codepage.copyChar(ctx, redrawX + visibleXStart, redrawY + visibleYStart, redrawX, redrawY); // do not store
                 redrawX++;
             }

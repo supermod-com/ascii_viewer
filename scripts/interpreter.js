@@ -43,7 +43,7 @@ function Interpreter(url, display) {
 					globalEscaped = false;
 					globalDisplay = display;
                     globalString = ab2str(http.response);
-                    alert(globalString.length);
+                    //alert(globalString.length);
 					escapesCursor.parse(globalString, {
                     onEscape    : escapesCursor.escape,
                     onLiteral   : escapesCursor.modified_write2,
