@@ -149,7 +149,7 @@ function Codepage(codepageUrl, callback) {
                             var myx = (myasciiCode % 32) * characterWidth+(xpos*256);
                             var myy = Math.floor(myasciiCode / 32) * characterHeight + (ypos*128);
 
-                           if (realY < visibleHeight) {
+                           if (realY < visibleHeight-1) {
 
 						    	// Then the character from the image gets copied to the canvas
                             	//alert("1:myx="+myx+" myy="+myy+" x="+x+" y="+y+"CW1:"+characterHeight+" canvasCharacterHeight:"+canvasCharacterHeight);
@@ -162,12 +162,13 @@ function Codepage(codepageUrl, callback) {
                         while (xpos >= 16) xpos=xpos-16;
                         var ypos = Math.floor(foreground/16);
                         
-                        
+                        if (realY < visibleHeight-1) {
                         var myx = (asciiCode % 32) * characterWidth+(xpos*256);
                         var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
                         //alert(myx+"/"+x);
 						// As you can see, the calculated character from the image gets copied/drawn to the canvas
                         ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
+                        }
             } // if x >= xStart-1
             } // if y >= yStart-1
 			// Now here you should place code which stores characters in the screenCharacterArray in case characters get rendered that are above or before the start of the scrollbar. Is this ever the case?

@@ -53,6 +53,7 @@ function Interpreter(url, display) {
 						globalBuffer = new Uint8Array(); 
 						globalPos = 0; 
 						counter=0; 
+						updateScrollbarY(true);
 						}
                 	});
 
