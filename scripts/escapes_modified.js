@@ -487,6 +487,10 @@
                 length;
 
             foreground = this.foreground;
+			if (this.flags & BRIGHT) {
+					 foreground=foreground+8;
+			}
+
             background = this.background;
 
             for (i = 0, length = text.length; i < length; i++) {
@@ -529,7 +533,6 @@
 
 					//prevy = y;
 					// globalContext is = document.getElementById("ansi").getContext("2d");
-					
 					codepage.drawChar(globalContext, charcode, foreground, background, x, y); // , transparent, storeCharacter, storeCharacterX) 
 					if (cursor.column === 80) {
                         cursor.column = 1;
