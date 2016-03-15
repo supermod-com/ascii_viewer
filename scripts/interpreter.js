@@ -25,7 +25,7 @@ function ab2str(buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf));
 }
 
-function Interpreter(url, display) {
+function Interpreter(url) {
         var http, buffer, pos, escaped, escapeCode;
 
 		
@@ -42,7 +42,6 @@ function Interpreter(url, display) {
 					globalPos = 0;
 					escapeCode = "";
 					globalEscaped = false;
-					globalDisplay = display;
                     globalString = ab2str(http.response);
                     //alert(globalString.length);
 					escapesCursor.parse(globalString, {
@@ -88,6 +87,8 @@ function Interpreter(url, display) {
 function renderMoreWhenIdle() {
 
 	alert("renderMoreWhenIdle interpreter.js "+maxRenderedLine+"/"+screenCharacterArray.length);
+	// This is already happening and must get removed. 
+	// However, this should get used in combination with screenCharacterArray
 	for (var i = maxRenderedLine; i < screenCharacterArray.lenght; i++)
 	{
      
@@ -102,10 +103,10 @@ function renderMoreWhenIdle() {
             
     var newCanvasContext = newCanvas.getContext("2d");
     newCanvasContext.putImageData(backgroundRenderedImage,0,0);
-            
-    document.body.appendChild(newCanvas);
+	// reenable this if you need the copy of the canvas to be actively visible in the browser  
+ 	// document.body.appendChild(newCanvas);
 
-
+	// Remove this to show default behaviour
 	document.getElementsByTagName("body")[0].style.overflow="auto";
 
 }

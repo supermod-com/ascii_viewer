@@ -54,6 +54,7 @@ function Codepage(codepageUrl, callback) {
 		/** This gets called from modified_write2 from inside escape.js **/
         function drawChar(ctx, asciiCode, foreground, background, x, y, transparent, storeCharacter, storeCharacterX) {
             
+           
            var realY = y;
            if (typeof(storeCharacter)=="number") {
                realY = storeCharacter;
@@ -79,6 +80,18 @@ function Codepage(codepageUrl, callback) {
 							// This are checks, otherwise the browser hangs. If it's more efficient to do a try catch then that's okay too.
                             if (typeof(screenCharacterArray[realY])=="undefined") {
                                 screenCharacterArray[realY]=new Array();
+                                screenCharacterArray[realY+1]=new Array();
+                                
+                                var canvas = document.getElementById('ansi');
+  								// Trying to implement changing canvas height - but it's crashing firefox.
+  								// Therefore 8192 max. default height
+								/*
+								var canvasHeight=canvas.height;
+								var cursorHeight=realY*canvasCharacterHeight;
+								console.log(cursorHeight+"<"+canvasHeight);
+								if (canvasHeight<(cursorHeight+32)) {
+							 		canvas.height=cursorHeight+32;
+								}*/
 								
                                 totalVisibleHeight=realY;
                                 height=realY;
@@ -117,6 +130,8 @@ function Codepage(codepageUrl, callback) {
                             var myx = (myasciiCode % 32) * characterWidth+(xpos*256);
                             var myy = Math.floor(myasciiCode / 32) * characterHeight + (ypos*128);
 
+							
+
                            if (realY < visibleHeight-1) {
 
 						    	// Then the character from the image gets copied to the canvas
@@ -126,19 +141,33 @@ function Codepage(codepageUrl, callback) {
                             }
                         }
                         
-						if (realY < visibleHeight-1) { // If the screen is inside the area
+						//if (realY < visibleHeight-1) { // If the screen is inside the area
 						// Now this gets always called!
                         var xpos=foreground;
                         while (xpos >= 16) xpos=xpos-16;
                         var ypos = Math.floor(foreground/16);
-                       
+
+						
                         
                         var myx = (asciiCode % 32) * characterWidth+(xpos*256);
                         var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
+                        
+                      
+                       
+                        
                         // alert(myx+"/"+x);
 						// As you can see, the calculated character from the image gets copied/drawn to the canvas
+						// ***********************************************************************************************
+						// !!! Possible solution: Move this into requestanimframe.js for working with screenCharacterArray
+						// This way, escapesjs.js does not need to get modified and what needs so long for painting is
+						// called in a reularly updated interval. So, parsing of ANSI escape codes takes place in 
+						// interpreter.js->escapesjs
+						// codepagedisplay.js->drawChar
+						// but drawing inside requestanimframe.js !!!
+						// ***********************************************************************************************
                         ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
-                        }
+
+                        //}
             } // if x >= xStart-1
             } // if y >= yStart-1
 			
@@ -208,24 +237,4 @@ function Codepage(codepageUrl, callback) {
         return { "drawChar": drawChar, "generateDisplay": generateDisplay, "copyChar" : copyChar };
     };
     
-    /** This class Display. Still needed? This should get checked. If it gets called at a all.
-	    It was mostly used by another parser. Or it is still getting used by other projects. However, since escape.js is implemented we don't need most of this. Anyhow,
-	    somehow this has own instances of x and y coordinates - still needed? There's for example also a cursorPosX and cursorPosY variable. If you can easily remove this, do this **/
-    function Display() {
-        var canvas, ctx, x, y, savedX, savedY, foreground, background, bold, inverse;
-        
-        canvas = codepage.generateDisplay(width, height);
 
-		// Maybe you can get the context also using display.ctx
-        ctx = canvas.getContext("2d");
-
-	
-		// Big question is this needed, now that we already have a drawChar function in here.
-        function drawChar(asciiCode) {
-                    codepage.drawChar(ctx, asciiCode, bold ? foreground  : foreground, background, x++, y);
-        }
-       
-        return {
-            "drawChar": drawChar
-        };
-    }

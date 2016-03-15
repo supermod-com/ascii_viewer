@@ -161,7 +161,7 @@
                  }
                  startY++;
                 }
-                globalDisplay.clearScreen(bgstring);
+                //globalDisplay.clearScreen(bgstring);
        }
       
        ctx = document.getElementById("ansi").getContext("2d");
@@ -459,7 +459,7 @@
                 fullCanvasHeight=Math.floor(visibleWidth*8*characterHeightPct);
 
                 canvas.width=fullCanvasWidth;
-                canvas.height=fullCanvasHeight;
+                canvas.height=8192; // fullCanvasHeight;
                 canvasCharacterWidth=Math.floor(8*characterWidthPct);
                 canvasCharacterHeight=Math.floor(16*characterHeightPct);
         
@@ -469,7 +469,7 @@
                 fullCanvasHeight=window_innerHeight; // Math.floor(width*8*characterHeightPct);
 
                 canvas.width=fullCanvasWidth;
-                canvas.height=fullCanvasHeight;
+                canvas.height=8192; // fullCanvasHeight;
 
                 canvasCharacterWidth=Math.floor(window_innerWidth/visibleWidth); // Math.floor(8*characterWidthPct);
                 canvasCharacterHeight=Math.floor(window_innerHeight / visibleHeight); // Math.floor(16*characterHeightPct);

@@ -78,7 +78,6 @@
             setANSICanvasSize(); // app.js
               
             globalContext = document.getElementById("ansi").getContext("2d");
-            display = new Display(); // codepagedisplay.js
             doClearScreen(false); // app.js - if the parameter is true, the variable screenCharacterArray gets reset
             escapesCursor = escapes({}); // Modified version of escape.js
                 
@@ -101,7 +100,7 @@
 </head>
 <body>
     <div style="width: 640px" class="centered">
-        <canvas id="ansi" width=640 height=480></canvas> <!-- The size is certainly going to change. Where? Maybe in app.js through setANSICanvasSize() -->
+        <canvas id="ansi" width=640 height=8192></canvas> <!-- The size is certainly going to change. Where? Maybe in app.js through setANSICanvasSize() -->
     </div>
 </body>
 </html>
