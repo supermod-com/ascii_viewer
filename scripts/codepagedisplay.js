@@ -131,7 +131,7 @@ function Codepage(codepageUrl, callback) {
                         var xpos=foreground;
                         while (xpos >= 16) xpos=xpos-16;
                         var ypos = Math.floor(foreground/16);
-                        
+                       
                         
                         var myx = (asciiCode % 32) * characterWidth+(xpos*256);
                         var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
@@ -147,7 +147,6 @@ function Codepage(codepageUrl, callback) {
         
 		 // This gets called inside doRedraw inside requestanimframe.js, don't ask me where doRedraw=true is set.
          function copyChar(ctx, originX, originY, x, y) {
-            
        
            // This is just some information used when scrolling is implemented
             if (x>=xStart-1) {
@@ -181,6 +180,7 @@ function Codepage(codepageUrl, callback) {
                             var myx = (myasciiCode % 32) * characterWidth+(xpos*256);
                             var myy = Math.floor(myasciiCode / 32) * characterHeight + (ypos*128);
                            
+						
                             //alert("1:myx="+myx+" myy="+myy+" x="+x+" y="+y+"CW1:"+characterHeight+" canvasCharacterHeight:"+canvasCharacterHeight);
                             ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
                         
@@ -189,10 +189,10 @@ function Codepage(codepageUrl, callback) {
                         while (xpos >= 16) xpos=xpos-16;
                         var ypos = Math.floor(foreground/16);
                         
-                        
                         var myx = (asciiCode % 32) * characterWidth+(xpos*256);
                         var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
                         //alert(myx+"/"+x);
+						
                         ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
             }
             }

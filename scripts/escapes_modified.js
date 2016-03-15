@@ -208,13 +208,13 @@
         },
 
         trimCanvas: function () {
-            var new_height = (this.row + this.scrollback) * 16,
+            /*var new_height = (this.row + this.scrollback) * 16,
                 image_data = this.context.getImageData(0, 0, 640, new_height);
 
             this.canvas.height = new_height;
             this.clearCanvas();
             this.resetColor();
-            this.context.putImageData(image_data, 0, 0);
+            this.context.putImageData(image_data, 0, 0);*/
         },
 
         savePosition: function () {
@@ -290,6 +290,7 @@
             }
 
             this.trimCanvas();
+			
             options.onComplete.call(this.canvas, this);
             return this;
         },
@@ -601,12 +602,12 @@
         },
 
         trimCanvas: function () {
-            var new_height = (this.row + this.scrollback) * 16,
+          /*  var new_height = (this.row + this.scrollback) * 16,
                 image_data = this.context.getImageData(0, 0, 1280, new_height);
 
             this.canvas.height = new_height;
             this.clearCanvas();
-            this.context.putImageData(image_data, 0, 0);
+            this.context.putImageData(image_data, 0, 0);*/
         },
 
         clearCanvas: function () {

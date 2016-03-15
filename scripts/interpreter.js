@@ -87,7 +87,7 @@ function Interpreter(url, display) {
 
 function renderMoreWhenIdle() {
 
-	alert(maxRenderedLine+"/"+screenCharacterArray.length);
+	alert("renderMoreWhenIdle interpreter.js "+maxRenderedLine+"/"+screenCharacterArray.length);
 	for (var i = maxRenderedLine; i < screenCharacterArray.lenght; i++)
 	{
      
