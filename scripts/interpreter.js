@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+var backgroundRenderedImage;
 function ab2str(buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf));
 }
@@ -53,7 +54,20 @@ function Interpreter(url, display) {
 						globalBuffer = new Uint8Array(); 
 						globalPos = 0; 
 						counter=0; 
-						updateScrollbarY(true);
+						updateScrollbarY(true); // Show a part of the scrollbar again
+
+						// Now we need to copy the rendered image to a buffer or canvas context. We will use this rendered image copy as a starting point to render
+						// the remaining image as a canvas while the browser is idle.
+						
+						canvas = document.getElementById('ansi');
+						var width = canvas.width;
+						var height = canvas.height;
+						
+
+						backgroundRenderedImage=canvas.getContext("2d").getImageData(0,0,width,height);
+						renderMoreWhenIdle();
+
+
 						}
                 	});
 
@@ -71,3 +85,27 @@ function Interpreter(url, display) {
 		
     }
 
+function renderMoreWhenIdle() {
+
+	alert(maxRenderedLine+"/"+screenCharacterArray.length);
+	for (var i = maxRenderedLine; i < screenCharacterArray.lenght; i++)
+	{
+     
+	}
+
+	var originalWidth = document.getElementById('ansi').width;
+
+	newCanvas = document.createElement("canvas");
+    
+    newCanvas.setAttribute("width", originalWidth);
+    newCanvas.setAttribute("height", screenCharacterArray.length*16);
+            
+    var newCanvasContext = newCanvas.getContext("2d");
+    newCanvasContext.putImageData(backgroundRenderedImage,0,0);
+            
+    document.body.appendChild(newCanvas);
+
+
+	document.getElementsByTagName("body")[0].style.overflow="auto";
+
+}

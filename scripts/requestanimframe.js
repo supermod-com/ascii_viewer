@@ -169,13 +169,17 @@ function render() {
 			//alert(visibleYStart);
             redrawX = 0;
             while (redrawX < visibleWidth - 1) {
-				console.log("visibleYStart:"+visibleYStart);
+				console.log(redrawX);
                 codepage.copyChar(ctx, redrawX + visibleXStart, redrawY + visibleYStart, redrawX, redrawY); // do not store
                 redrawX++;
             }
             redrawY++;
+			console.log(redrawY+"<"+visibleHeight);
+			
         }
+		
         doRedraw = false;
+		
 
 
         return;

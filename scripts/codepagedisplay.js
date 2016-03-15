@@ -22,13 +22,12 @@
  */
  var xStart = 0;
  var yStart = 0;
- 
+ var maxRenderedLine = 0;
 
 /** This is functionality for drawing characters on the canvas using the image map **/
 function Codepage(codepageUrl, callback) {
         var COLORS, img, codepageImg;
-        var overlay=null;
-
+        
         function createCanvas(width, height) {
             
             var newCanvas = document.createElement("canvas");
@@ -38,39 +37,13 @@ function Codepage(codepageUrl, callback) {
             //canvasCharacterHeight=Math.floor(height/getDisplayHeight());
             return newCanvas;
         }
-
-        /*function copyCanvas(source, color, preserveAlpha) {
-            var canvas, ctx, imageData, i;
-            canvas = createCanvas(source.width, source.height);
-            ctx = canvas.getContext("2d");
-            ctx.drawImage(source, 0, 0);
-            
-            imageData = ctx.getImageData(0, 0, source.width, source.height);
-            for (i = 0; i < imageData.data.length; ++i) {
-                imageData.data[i++] = COLORS[color][0];
-                imageData.data[i++] = COLORS[color][1];
-                imageData.data[i++] = COLORS[color][2];
-                if (!preserveAlpha) { imageData.data[i] = 255; }
-            }
-            ctx.putImageData(imageData, 0, 0);
-            return canvas;
-        }*/
-        
-        
+      
 		/** Let's load the image map. See interpreter.js **/
         img = new Image();
         img.onload = function () {
             //var i, background;
             characterWidth = 256/32; //img.width / 32;
             characterHeight = 128/8; // img.height / 8;
-            
-            /*codepageImgs = [];
-            backgroundImgs = [];
-            background = createCanvas(characterWidth, characterHeight);
-            for (i = 0; i < COLORS.length; i++) {
-                codepageImg = copyCanvas(img, i, true);
-                backgroundImg = colorCanvas(background, i, false);
-            }*/
             codepageImg=img;
             
             callback();
@@ -106,6 +79,7 @@ function Codepage(codepageUrl, callback) {
 							// This are checks, otherwise the browser hangs. If it's more efficient to do a try catch then that's okay too.
                             if (typeof(screenCharacterArray[realY])=="undefined") {
                                 screenCharacterArray[realY]=new Array();
+								
                                 totalVisibleHeight=realY;
                                 height=realY;
                                 screenCharacterArray[realY][realX]=charArray;
@@ -113,19 +87,13 @@ function Codepage(codepageUrl, callback) {
                                 //console.log("Array "+realY);
                                 
                             } else
+							// only if storeCharacter is set and storeCharacter==true
                             if ( (typeof(storeCharacter)=="undefined") || (storeCharacter==true) ) {
-                                screenCharacterArray[realY][realX]=charArray;
+                                screenCharacterArray[realY][realX]=charArray; // Store the triple array inside the variable screenCharacterArray
                                 //console.log("Array 2 "+realY+" "+realX);
                             } 
                         }
 
-						 // I don't remember what this is good for. Maybe search for it?
-                         if (this.overlay!=null) {
-                                    asciiCode=this.overlay[0];
-                                    foreground=this.overlay[1];
-                                    background=this.overlay[2];
-                                }
-                     
 						// This calculates the real X coordinates on the canvas
                         x = (x  ) * parseInt(canvasCharacterWidth);
 
@@ -153,26 +121,27 @@ function Codepage(codepageUrl, callback) {
 
 						    	// Then the character from the image gets copied to the canvas
                             	//alert("1:myx="+myx+" myy="+myy+" x="+x+" y="+y+"CW1:"+characterHeight+" canvasCharacterHeight:"+canvasCharacterHeight);
+								maxRenderedLine=realY;
                             	ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
                             }
                         }
                         
+						if (realY < visibleHeight-1) { // If the screen is inside the area
 						// Now this gets always called!
                         var xpos=foreground;
                         while (xpos >= 16) xpos=xpos-16;
                         var ypos = Math.floor(foreground/16);
                         
-                        if (realY < visibleHeight-1) {
+                        
                         var myx = (asciiCode % 32) * characterWidth+(xpos*256);
                         var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
-                        //alert(myx+"/"+x);
+                        // alert(myx+"/"+x);
 						// As you can see, the calculated character from the image gets copied/drawn to the canvas
                         ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
                         }
             } // if x >= xStart-1
             } // if y >= yStart-1
-			// Now here you should place code which stores characters in the screenCharacterArray in case characters get rendered that are above or before the start of the scrollbar. Is this ever the case?
-			// I'm not sure. Mabye this is never the case :)
+			
         }
         
         
@@ -236,14 +205,7 @@ function Codepage(codepageUrl, callback) {
             return createCanvas(fullCanvasWidth, fullCanvasHeight);
         }
 
-		/** Currently this is not getting called, but it could get used from codepagedisplay.js 309 if needed. Maybe this needs to get implemented differently to make scrolling more smoothly or at different occasions **/
-        function scrollDisplay(ctx, canvas) {
-            ctx.drawImage(canvas, 0, characterHeight, canvas.width, canvas.height - characterHeight * 2, 0, 0, canvas.width, canvas.height - characterHeight * 2);
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, canvas.height - characterHeight * 2, canvas.width, characterHeight);
-        }
-
-        return { "drawChar": drawChar, "generateDisplay": generateDisplay, "scrollDisplay": scrollDisplay, "copyChar" : copyChar };
+        return { "drawChar": drawChar, "generateDisplay": generateDisplay, "copyChar" : copyChar };
     };
     
     /** This class Display. Still needed? This should get checked. If it gets called at a all.
@@ -257,147 +219,13 @@ function Codepage(codepageUrl, callback) {
 		// Maybe you can get the context also using display.ctx
         ctx = canvas.getContext("2d");
 
-		// Call this to set the current cursor position to x = 0 and y = 0
-        function homeCursor() {
-            x = 0;
-            y = 0;
-        }
-
-		// Simple getter
-		function getPosX() {
-			return x; 
-		}
-
-		// Simple getter
-		function getPosY() {
-				return y;
-		}
-
-        function resetAttributes() {
-            foreground = 7;
-            background = 0;
-            bold = false;
-            inverse = false;
-        }
-
-        function setBold(value) {
-            bold = value;
-        }
-
-        function setInverse(value) {
-            inverse = value;
-        }
-
-        function setPos(newX, newY) {
-            x = Math.min(width, Math.max(0, newX));
-            y = Math.min(height, Math.max(0, newY));
-        }
-
-        function setForeground(value) {
-            foreground = value;
-        }
-
-        function setBackground(value) {
-            background = value;
-        }
-
-        function clearToEndOfLine() {
-            var i;
-            for (i = x; i < width; ++i) {
-                codepage.drawChar(ctx, 0, 0, 0, i, y);
-            }
-        }
-
-       function clearScreen(fillStyle) {
-            if (typeof(fillStyle)=="undefined") fillStyle="black";
-            homeCursor();
-            ctx.fillStyle = fillStyle;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-
-        function up(num) {
-            y = Math.max(1, y - num);
-        }
-
-        function down(num) {
-            y = Math.min(height - 1, y + num);
-        }
-
-        function newLine() {
-            x = 0;
-            if (y === height - 1) {
-				// This is commented out. Does it need to get activated again? Maybe do something different, like updating the scrollbars also?
-                //codepage.scrollDisplay(ctx, canvas);
-                return true;
-            }
-            ++y;
-            return false;
-        }
-
-        function back(num) {
-            x = Math.max(1, x - num);
-        }
-
-        function forward(num) {
-            if (x === width) { newLine(); }
-            x = Math.min(width, x + num);
-        }
-
+	
 		// Big question is this needed, now that we already have a drawChar function in here.
         function drawChar(asciiCode) {
-          
-            switch (asciiCode) {
-            case 26:
-                break;
-            default:
-                if (!inverse) {
-                    //alert("calling drawChar with ascii:"+asciiCode+"fg:"+foreground+" background:"+background+"x:"+x+"y:"+y);;
                     codepage.drawChar(ctx, asciiCode, bold ? foreground  : foreground, background, x++, y);
-                    
-                } else {
-                    //alert("inv ascii:"+asciiCode+"fg:"+foreground+" background:"+background);
-                    //alert("calling drawChar with ascii:"+asciiCode+"fg:"+foreground+" background:"+background+"x:"+x+"y:"+y);;
-                  
-                  
-                    codepage.drawChar(ctx, asciiCode, bold ? background + 8 : background, foreground, x++, y);
-                }
-                if (x === width + 1) { return newLine(); }
-            }
-            return false;
         }
-
-        function savePosition() {
-            savedX = x;
-            savedY = y;
-        }
-
-        function restorePosition() {
-            x = savedX;
-            y = savedY;
-        }
-
-        homeCursor();
-        resetAttributes();
        
         return {
-            "resetAttributes": resetAttributes,
-            "setBold": setBold,
-            "setInverse": setInverse,
-            "setPos": setPos,
-            "up": up,
-            "down": down,
-            "newLine": newLine,
-            "back": back,
-            "forward": forward,
-            "setForeground": setForeground,
-            "setBackground": setBackground,
-            "clearToEndOfLine": clearToEndOfLine,
-            "clearScreen": clearScreen,
-            "canvas": canvas,
-            "drawChar": drawChar,
-            "savePosition": savePosition,
-            "restorePosition": restorePosition,
-            "getPosX": getPosX,
-            "getPosY": getPosY
+            "drawChar": drawChar
         };
     }
