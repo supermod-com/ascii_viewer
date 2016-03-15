@@ -420,7 +420,7 @@
 		/** This is getting called whenever the user resizes the canvas, to show always the same amount of characters, just with a different width and height **/
         function resize_canvas(){
             
-            canvas = document.getElementById("ansi");
+           /* canvas = document.getElementById("ansi");
             ctx = document.getElementById("ansi").getContext("2d");
             setCanvasSize(canvas);
             //doClearScreen(false);
@@ -443,7 +443,7 @@
                 }
             }
             updateScrollbarX(2);
-            updateScrollbarY(2);
+            updateScrollbarY(2);*/
         }
         
        function setCanvasSize(canvas) {

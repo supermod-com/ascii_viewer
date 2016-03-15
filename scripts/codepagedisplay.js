@@ -77,10 +77,13 @@ function Codepage(codepageUrl, callback) {
                          charArray[1]=foreground;
                          charArray[2]=background;
                         
+						
+							
+						
 							// This are checks, otherwise the browser hangs. If it's more efficient to do a try catch then that's okay too.
                             if (typeof(screenCharacterArray[realY])=="undefined") {
                                 screenCharacterArray[realY]=new Array();
-                                screenCharacterArray[realY+1]=new Array();
+                                //screenCharacterArray[realY+1]=new Array();
                                 
                                 var canvas = document.getElementById('ansi');
   								// Trying to implement changing canvas height - but it's crashing firefox.
