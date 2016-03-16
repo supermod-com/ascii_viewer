@@ -77,13 +77,10 @@ function Codepage(codepageUrl, callback) {
                          charArray[1]=foreground;
                          charArray[2]=background;
                         
-						
-							
-						
 							// This are checks, otherwise the browser hangs. If it's more efficient to do a try catch then that's okay too.
                             if (typeof(screenCharacterArray[realY])=="undefined") {
                                 screenCharacterArray[realY]=new Array();
-                                //screenCharacterArray[realY+1]=new Array();
+                                screenCharacterArray[realY+1]=new Array();
                                 
                                 var canvas = document.getElementById('ansi');
   								// Trying to implement changing canvas height - but it's crashing firefox.
@@ -141,6 +138,9 @@ function Codepage(codepageUrl, callback) {
                             	//alert("1:myx="+myx+" myy="+myy+" x="+x+" y="+y+"CW1:"+characterHeight+" canvasCharacterHeight:"+canvasCharacterHeight);
 								maxRenderedLine=realY;
                             	ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
+                            	ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y+(visibleHeight*characterHeight), canvasCharacterWidth, canvasCharacterHeight);
+                            } else {
+                            	ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y+(visibleHeight*characterHeight), canvasCharacterWidth, canvasCharacterHeight);
                             }
                         }
                         
@@ -151,9 +151,28 @@ function Codepage(codepageUrl, callback) {
                         var ypos = Math.floor(foreground/16);
 
 						
-                        
-                        var myx = (asciiCode % 32) * characterWidth+(xpos*256);
-                        var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
+                        if (realY < visibleHeight-1) 
+                        { 
+                          var myx = (asciiCode % 32) * characterWidth+(xpos*256);
+                          var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
+                          
+                          // standard drawing
+                          ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
+                          
+                          // now add visibleHeight to it, to draw it below the main image again
+                          y+=(visibleHeight*characterHeight);
+                          
+                          ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
+                          
+                        } else {
+                          
+                          var myx = (asciiCode % 32) * characterWidth+(xpos*256);
+                          var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
+                          y+=(visibleHeight*characterHeight);
+                          ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
+                          
+                          
+                        }
                         
                       
                        
@@ -168,7 +187,7 @@ function Codepage(codepageUrl, callback) {
 						// codepagedisplay.js->drawChar
 						// but drawing inside requestanimframe.js !!!
 						// ***********************************************************************************************
-                        ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
+                        
 
                         //}
             } // if x >= xStart-1
