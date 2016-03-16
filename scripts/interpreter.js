@@ -86,6 +86,7 @@ function Interpreter(url) {
 
 function renderMoreWhenIdle() {
 
+    if (debug==false) return;
 	alert("renderMoreWhenIdle interpreter.js "+maxRenderedLine+"/"+screenCharacterArray.length);
 	// This is already happening and must get removed. 
 	// However, this should get used in combination with screenCharacterArray
