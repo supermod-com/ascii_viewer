@@ -22,6 +22,8 @@
  */
 var animOffsetX = 0;
 var animOffsetY = 0;
+var visibleXStart = 0;
+var visibleYStart = 0;
 
 var bps = 99999;
 
@@ -67,24 +69,6 @@ window.requestAnimFrame = (function() {
 
 /** This function gets always called **/
 function render() {
-
-	
-	// If doRedraw gets set somewhere, i.e. inside the parser, the whole canvas gets redrawn by drawing characters.
-    if (doRedraw) {
-				doClearScreen(false);
-        		var lowerFrameStart = visibleWidth*canvasCharacterHeight; // redrawX + visibleXStart
-        		
-        		console.log("visibleYStart:"+visibleYStart);
-				// visibleWidth-1 due to scrollbar on the right side, visibleHeight-2 due to scrollbar on the lower side
-        		var imgData = ctx.getImageData(visibleXStart*canvasCharacterWidth, (visibleHeight+visibleYStart+1)*canvasCharacterHeight, (visibleWidth-1)*canvasCharacterWidth, (visibleHeight-3)*canvasCharacterHeight);
-        		ctx.putImageData(imgData, 0, 0);
-		
-        		doRedraw = false;
-		
-
-
-        return;
-    }
 
     var charcounter=0;
 	

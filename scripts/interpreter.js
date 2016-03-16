@@ -38,12 +38,11 @@ function Interpreter(url) {
 					{
                     onEscape    : escapesCursor.escape,
                     onLiteral   : modified_write2,
-                    onComplete  : function() { 
-						
-						
+                    onComplete  : function() {
 						updateScrollbarX(true,0); // draw the scrollbar at the bottom, x position = 0 
 						updateScrollbarY(true,0); // Show a part of the scrollbar again
 						console.log("COMPLETE");
+						finishedRendering=true;
 						}
                 	});
 

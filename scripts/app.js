@@ -1,6 +1,4 @@
 
-        var doRedraw=false;
-      
 	    var drawCharacters = new Array(); // This is just an one-dimensional array containing a two-dimensional array with x and y coordinates for the screenCharacterArray
         var globalContext;
         /** When we are drawing by using mouse clicks, this is set to true **/
@@ -40,6 +38,13 @@
       /** Ansi interpreter, display and charactersatonce **/
       var interpreter, display, charactersatonce;
          
+		 function doRedraw() {
+				doClearScreen(false);
+        		var lowerFrameStart = visibleWidth*canvasCharacterHeight; // redrawX + visibleXStart
+				// visibleWidth-1 due to scrollbar on the right side, visibleHeight-2 due to scrollbar on the lower side
+        		var imgData = ctx.getImageData(visibleXStart*canvasCharacterWidth, (visibleHeight+visibleYStart+1)*canvasCharacterHeight, (visibleWidth-1)*canvasCharacterWidth, (visibleHeight-1)*canvasCharacterHeight);
+        		ctx.putImageData(imgData, 0, 0);
+		 }
       
 	  // This gets called whenever the scrollbar position changes from scrollbar.js, from inside the even listeners
         function redrawScreen() {
@@ -54,7 +59,7 @@
              animOffsetX=visibleXStart;
              animOffsetY=visibleYStart;
              
-             doRedraw=true;
+             doRedraw();
         }
           
         
