@@ -115,8 +115,7 @@ function Codepage(codepageUrl, callback) {
             } // if y >= yStart-1
 			
         }
-        
-        
+
 		 // This gets called inside doRedraw inside requestanimframe.js, don't ask me where doRedraw=true is set.
          function copyChar(ctx, originX, originY, x, y) {
        

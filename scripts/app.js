@@ -1,4 +1,4 @@
-
+		var resizeTO; // Trigger resize end event
 	    var drawCharacters = new Array(); // This is just an one-dimensional array containing a two-dimensional array with x and y coordinates for the screenCharacterArray
         var globalContext;
         /** When we are drawing by using mouse clicks, this is set to true **/
@@ -209,7 +209,7 @@
         
 	
 		/* This creates a new screenCharacterArray in which the colors and codes get stored, by default color white and space (32) **/
-        function setANSICanvasSize() {
+        /*function setANSICanvasSize() {
             var totalDisplayWidth=getTotalDisplayWidth();
             var totalDisplayHeight=getTotalDisplayHeight();
             
@@ -229,15 +229,58 @@
                     //console.log("y:"+y+" length:"+screenCharacterArray[y].length);
             }
 
-           window.onresize = function() { 
-               resize_canvas();
+          
+           
+        }*/
+ window.onresize = function() { 
+			var bgstring = "#000000";
+		   finishedRendering=false;
+		   ctx = document.getElementById("ansi").getContext("2d");
+		   ctx.fillStyle = bgstring;
+		  
+		   // clears everything
+		   ctx.fillRect(0, 0, document.getElementById('ansi').width, document.getElementById('ansi').height);
+				if(resizeTO) clearTimeout(this.resizeTO);
+				resizeTO = setTimeout(function() {
+					resize_canvas();
+				}, 500);
            }
-           
-        }
+
 		/** This is getting called whenever the user resizes the canvas, to show always the same amount of characters, just with a different width and height **/
-        function resize_canvas(){
-            
-           
+        function resize_canvas() {
+			console.log("RESIZE CLEAR");
+		   /*var bgstring = "#000000";
+		   finishedRendering=false;
+		   ctx = document.getElementById("ansi").getContext("2d");
+		   ctx.fillStyle = bgstring;
+		   var window_innerWidth = (visibleWidth*(canvasCharacterWidth));
+		   var window_innerHeight = (visibleHeight*(canvasCharacterHeight));
+		   // clears everything
+		   ctx.fillRect(0, 0, document.getElementById('ansi').width, document.getElementById('ansi').height);*/
+			finishedRendering=false;
+		   // Now set the new canvas dimensions
+console.log("RESIZE SIZE");
+		   setCanvasSize(document.getElementById("ansi")); // This creates the canvas for us
+
+		   // Then draw all characters again
+		   console.log("RESIZE CHARS");
+           drawCharacters=new Array();
+           for (var y = 0; y < screenCharacterArray.length; y++)
+           {
+			   if (typeof(screenCharacterArray[y])!="undefined") {
+					for (var x = 0; x < screenCharacterArray[y].length;  x++)
+					{
+						if (typeof(screenCharacterArray[y][x])!="undefined")
+						{
+								drawCharacters.push(new Array(x, y));
+						}
+					}
+			   }
+           }
+		   finishedRendering=true;
+		   updateScrollbarX(true,0); // draw the scrollbar at the bottom, x position = 0 
+		   updateScrollbarY(true,0); // Show a part of the scrollbar again
+		   console.log("NOW IT SHOULD REDRAW");
         }
         
 	   /* This sets the correct variables from the values visibleWidth, visibleHeight and totalVisibleWidth and totalVisibleHeight **/
