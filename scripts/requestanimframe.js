@@ -163,20 +163,11 @@ function render() {
 	// If doRedraw gets set somewhere, i.e. inside the parser, the whole canvas gets redrawn by drawing characters.
     if (doRedraw) {
 		doClearScreen(false);
-        var redrawY = 0;
-        while (redrawY < visibleHeight - 1)
-        {
-			//alert(visibleYStart);
-            redrawX = 0;
-            while (redrawX < visibleWidth - 1) {
-				console.log(redrawX);
-                codepage.copyChar(ctx, redrawX + visibleXStart, redrawY + visibleYStart, redrawX, redrawY); // do not store
-                redrawX++;
-            }
-            redrawY++;
-			console.log(redrawY+"<"+visibleHeight);
-			
-        }
+        	var lowerFrameStart = visibleWidth*canvasCharacterHeight; // redrawX + visibleXStart
+        		
+        		console.log("visibleYStart:"+visibleYStart);
+        		var imgData = ctx.getImageData(0, (visibleHeight+visibleYStart)*characterHeight, visibleWidth*characterWidth, visibleHeight*characterHeight);
+        		ctx.putImageData(imgData, 0, 0);
 		
         doRedraw = false;
 		
