@@ -14,7 +14,13 @@
 
 // greetz to deniz.
 //var prevy = 0;
-/** Please only take a look at modified_write2 which makes a call to drawChar **/
+/** Modifications made:
+	The function Canvas for creating a canvas are not needed
+	The function httpGet for loading the ANSI file is not needed, because it gets loaded elsewhere
+	The function trimCanvas is commented out because we don't want to set any info about it or the size of the canvas
+	afterwards, or have our own handling for setting the correct canvas size
+	
+ **/
 
 /*jslint forin: true, bitwise: true, browser: true, plusplus: true, regexp: true */
 
@@ -289,7 +295,7 @@
                 options.onLiteral.call(this, buffer.slice(pos));
             }
 
-            this.trimCanvas();
+            //this.trimCanvas();
 			
             options.onComplete.call(this.canvas, this);
             return this;
@@ -459,7 +465,7 @@
                 }
             }
 
-            this.trimCanvas();
+            //this.trimCanvas();
             options.onComplete.call(this.canvas, this);
 
             return this;
