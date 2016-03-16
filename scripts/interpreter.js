@@ -46,7 +46,7 @@ function Interpreter(url) {
                     //alert(globalString.length);
 					escapesCursor.parse(globalString, {
                     onEscape    : escapesCursor.escape,
-                    onLiteral   : escapesCursor.modified_write2,
+                    onLiteral   : modified_write2,
                     onComplete  : function() { 
 						// Make sure globalBuffer does not get too long. You have read correctly, globalBuffer must get reset. It's not sure this works.
 						
@@ -83,6 +83,92 @@ function Interpreter(url) {
 
 		
     }
+    
+function modified_write2(text) {
+
+    var CR = 0x0d,
+                LF = 0x0a,
+                cursor = this,
+                image_data,
+                background,
+                foreground,
+                charcode,
+                x,
+                y,
+                i,
+                length;
+
+            foreground = this.foreground;
+			if (this.flags & escapesCursor.BRIGHT) {
+					 foreground=foreground+8;
+			}
+
+            background = this.background;
+
+            for (i = 0, length = text.length; i < length; i++) {
+                charcode = text.charCodeAt(i); // & 0xff;  // truncate to 8 bits
+                switch (charcode) {
+                case CR:
+                    cursor.column = 1;
+                    break;
+
+                case LF:
+                    cursor.row++;
+                    break;
+
+                default:
+                   // x = (cursor.column - 1) * 8;
+                    // y = (cursor.row + cursor.scrollback - 1) * 16;
+                     x = (cursor.column - 1);
+					 y = (cursor.row + cursor.scrollback - 1);
+
+					// modified
+					// image_data = this.renderChar(charcode, foreground, background);
+                    // this.context.putImageData(image_data, x, y);
+
+					// 1 = blue
+					// 2 = green
+					// 3 = cyan
+					// 4 = red
+					// 5 = purple
+					// 6 = brown
+					// 7 = green
+					// 8 = light blue
+					// 9 = light green
+					// 10 = light cyan
+					// 11 = light red
+					// 12 = light purple
+					// 13 = yellow
+					// 14 = white
+					
+					//if (prevy!=y) alert(y);
+
+					//prevy = y;
+					// globalContext is = document.getElementById("ansi").getContext("2d");
+					codepage.drawChar(globalContext, charcode, foreground, background, x, y); // , transparent, storeCharacter, storeCharacterX) 
+					if (cursor.column === 80) {
+                        cursor.column = 1;
+                        cursor.row++;
+                    } else {
+                        cursor.column++;
+                    }
+                    break;
+                }
+				
+
+// The value of 'row' represents current position relative to the top of the
+// screen and therefore cannot exceed 25. Vertical scroll past the 25th line
+// increments the scrollback buffer instead.
+
+                if (cursor.row === 26) {
+                    cursor.scrollback++;
+                    cursor.row--;
+                }
+            }
+        
+
+
+}
 
 function renderMoreWhenIdle() {
 
