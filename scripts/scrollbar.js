@@ -26,11 +26,12 @@
 var scrollPosY = 0;
 var scrollPosX = 0;
 
-// This is a handy function to draw a certain line Y starting at X = 0 going up to how many x characters are inside the y index/coordinate **/
-function drawLine(fromRealY, toCursorY) {
+
+	// This is a handy function to draw a certain line Y starting at X = 0 going up to how many x characters are inside the y index/coordinate **/
+	function drawLine(fromRealY, toCursorY) {
        for (var x = 0; x < screenCharacterArray[fromRealY].length; x++) {
            var charArray = screenCharacterArray[fromRealY][x];
-           asciiCode=charArray[0];
+           asciiCode=179;//charArray[0];
            foreground=charArray[1];
            background=charArray[2];
            codepage.drawChar(ctx, asciiCode, foreground, background, x, toCursorY, false, false); // do not store
@@ -47,6 +48,87 @@ function drawLine(fromRealY, toCursorY) {
            codepage.drawChar(ctx, asciiCode, foreground, background, toCursorX, y, false, false); // do not store
        }
    };
+
+   /** This are global variables. When they get set somewhere, i.e. when scrolling occurs, this gets called. This behaves very much like a setTimeout, so the other functions hopefully are not lacking timeouts **/
+    function scrollDown() { // Scrolling down means the scrollbar scrolls down. The canvas moves up.
+	    if (scrollPosY<totalVisibleHeight)
+	    {
+			scrollPosY++;
+			var startX = 0;
+			var startY = canvasCharacterHeight;
+			var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth));
+			var window_innerHeight = ((visibleHeight - scrollBarYShown) * (canvasCharacterHeight));
+
+			var screenWidth = canvasCharacterHeight;
+
+			// Scroll down by copying a whole region
+			var imgData = ctx.getImageData(startX, startY, window_innerWidth - canvasCharacterWidth, window_innerHeight - canvasCharacterHeight - 1);
+			ctx.putImageData(imgData, 0, 0);
+
+			drawLine(scrollPosY+visibleHeight-3, visibleHeight-3);
+			// Since the canvas moves 
+			updateScrollbarY(true, 1); // parameter: drawTopBlackside
+        }
+    }
+
+    function scrollUp() { // Scrolling up means the scrollbar scrolls up. The canvas moves down.
+    	if (scrollPosY>0)
+		{
+			scrollPosY--;
+			var startX = 0;
+			var startY = 0;
+			var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth)); // Screen width without subtracting any character width, which is not needed
+			var window_innerHeight = (visibleHeight - scrollBarYShown) * (canvasCharacterHeight); // We're scrolling up. So this is 
+
+			// Scroll up by copying a whole region
+			var imgData = ctx.getImageData(startX, startY, window_innerWidth - canvasCharacterWidth, window_innerHeight - canvasCharacterHeight);
+			ctx.putImageData(imgData, 0, canvasCharacterHeight);
+
+			// Now that we have moved everything, we need to redraw the first line. Redrawing the first line means that the first line is not correct.
+			drawLine(scrollPosY, 0);
+			updateScrollbarY(true, 0); // parameter: drawTopBlackside
+		}
+    }
+
+    function scrollLeft() {
+		if (scrollPosX>0)
+		{
+			scrollPosX--;
+			var startX = 0;
+
+			var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth));
+			var window_innerHeight = (visibleHeight * (canvasCharacterHeight));
+			console.log("startX:" + startX + " window_innerWidth:" + window_innerWidth);
+			// Move a whole region
+			var imgData = ctx.getImageData(0, 0, window_innerWidth - canvasCharacterWidth - canvasCharacterWidth, window_innerHeight);
+			ctx.putImageData(imgData, canvasCharacterWidth, 0);
+			drawVerticalLine(scrollPosX, 0);
+
+			updateScrollbarX(true, 0); // parameter: drawLeftBlackside
+        }
+    }
+
+    function scrollRight() { // Scrolling right means the scrollbar moves the the right. The canvas moves to the left side.
+	    if (scrollPosX<totalVisibleWidth)
+	    {
+			scrollPosX++;
+			var startX = canvasCharacterWidth; // maybe 8 pixel
+
+			var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth));
+			var window_innerHeight = (visibleHeight * (canvasCharacterHeight));
+			console.log("startX:" + startX + " window_innerWidth:" + window_innerWidth);
+			// Move a whole region
+			var imgData = ctx.getImageData(startX, 0, window_innerWidth - startX - startX, window_innerHeight);
+			ctx.putImageData(imgData, 0, 0);
+
+			console.log("visibleWidth+leftLine:" + (visibleWidth + scrollOffsetX));
+			console.log("visibleWidth:" + visibleWidth);
+			drawVerticalLine(scrollPosX+visibleWidth, visibleWidth - 2);
+
+			updateScrollbarX(true, 1); // parameter: drawLeftBlackside
+        }
+    }
+
   
   /** This redraws the vertial scrollbar **/
   function updateScrollbarY(drawTopBlackside, offsetY) {
@@ -116,7 +198,6 @@ function drawLine(fromRealY, toCursorY) {
        if (myScrollPosX+offsetX<0) {
            myScrollPosX = -offsetX;
        }
-   
        
        var myScrollPosY = (visibleHeight-1  ) * parseInt(canvasCharacterHeight)-3;
        

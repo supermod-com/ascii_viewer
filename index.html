@@ -29,13 +29,12 @@
     <title>ascii stripped</title>
 	<!-- This contains functionality to draw characters on the canvas -->
     <script src="scripts/codepagedisplay.js" type="text/javascript"></script>
-   
-    <!-- contains most of the variables -->
-    <script src="scripts/app.js"></script>
-	<!-- contains the event listeners of the scrollbar, listening for mouse events -->
+   <!-- contains the actions in regard with scrolling, called by the event listeners in app.js -->
     <script src="scripts/scrollbar.js"></script>
-	<!-- This is not needed, but might be useful for additional functionality -->
-    <!-- <script src="fileuploader/fileuploader.js"></script> -->
+    <!-- contains most of the variables and event listeners -->
+    <script src="scripts/app.js"></script>
+	
+	
 	<!-- This makes a simple ajax call -->
 	<script src="scripts/interpreter.js"></script>
 	<!-- This gets regularly called, and checks the variable global... when this variable changes, the ansi in it gets parsed -->
@@ -45,11 +44,12 @@
     <!--<link rel="stylesheet" href="css/panel.css" type="text/css" media="screen" />-->
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
     <!-- <link rel="stylesheet" href="fileuploader/fileuploader.css" type="text/css" media="screen" /> -->
-
+	<!-- This is not needed, but might be useful for additional functionality -->
+    <!-- <script src="fileuploader/fileuploader.js"></script> -->
    
     <style type="text/css" media="screen">
     body {
-        overflow:hidden;
+        overflow:hidden; // Remove this if you want to see what is contained below the canvas
     }
     </style>
     <script>
@@ -80,17 +80,12 @@
             globalContext = document.getElementById("ansi").getContext("2d");
             doClearScreen(false); // app.js - if the parameter is true, the variable screenCharacterArray gets reset
             escapesCursor = escapes({}); // Modified version of escape.js
-                
-                
-                updateScrollbarX(0); // draw the scrollbar at the bottom, x position = 0 
-                updateScrollbarY(0); // draw the scrollbar on the right side, y position = 0
-           
-						
-                      interpreter = new Interpreter("test.ans"); // Load parse.ans and place its content into globalBuffer
+                		
+                      interpreter = new Interpreter("test.ans"); // Load parse.ans and place its content into screenCharacterArray and 
                       
 					  // Initialize the event listening
-                      initansicanvas(); // app.js - if you want to clean it up you can create a class called App
-          
+                      registerEventListeners(); // app.js - if you want to clean it up you can create a class called App
+					  registerKeyEventListeners(); // app.js
             }); 
             
     }

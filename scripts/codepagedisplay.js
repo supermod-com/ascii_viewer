@@ -23,10 +23,11 @@
  var xStart = 0;
  var yStart = 0;
  var maxRenderedLine = 0;
+ var codepageImg;
 
 /** This is functionality for drawing characters on the canvas using the image map **/
 function Codepage(codepageUrl, callback) {
-        var COLORS, img, codepageImg;
+        var COLORS, img;
         
         function createCanvas(width, height) {
             
@@ -54,7 +55,6 @@ function Codepage(codepageUrl, callback) {
 		/** This gets called from modified_write2 from inside escape.js **/
         function drawChar(ctx, asciiCode, foreground, background, x, y, transparent, storeCharacter, storeCharacterX) {
             
-           
            var realY = y;
            if (typeof(storeCharacter)=="number") {
                realY = storeCharacter;
@@ -71,32 +71,21 @@ function Codepage(codepageUrl, callback) {
                  
 						// transparent is only used in conjunction to redraw the cursor. So this is nearly always true - but anyway it might not get called.
                         if ( (typeof(transparent)=="undefined") || (transparent==false) ) {
-                         var charArray = Array();
+                         var charArray = new Array();
                          
                          charArray[0]=asciiCode;
                          charArray[1]=foreground;
                          charArray[2]=background;
+						 
                         
 							// This are checks, otherwise the browser hangs. If it's more efficient to do a try catch then that's okay too.
                             if (typeof(screenCharacterArray[realY])=="undefined") {
                                 screenCharacterArray[realY]=new Array();
-                                screenCharacterArray[realY+1]=new Array();
-                                
-                                var canvas = document.getElementById('ansi');
-  								// Trying to implement changing canvas height - but it's crashing firefox.
-  								// Therefore 8192 max. default height
-								/*
-								var canvasHeight=canvas.height;
-								var cursorHeight=realY*canvasCharacterHeight;
-								console.log(cursorHeight+"<"+canvasHeight);
-								if (canvasHeight<(cursorHeight+32)) {
-							 		canvas.height=cursorHeight+32;
-								}*/
-								
+                               
                                 totalVisibleHeight=realY;
                                 height=realY;
                                 screenCharacterArray[realY][realX]=charArray;
-                                
+                                drawCharacters.push(new Array(realX, realY));
                                 //console.log("Array "+realY);
                                 
                             } else
@@ -104,79 +93,11 @@ function Codepage(codepageUrl, callback) {
                             if ( (typeof(storeCharacter)=="undefined") || (storeCharacter==true) ) {
                                 screenCharacterArray[realY][realX]=charArray; // Store the triple array inside the variable screenCharacterArray
                                 //console.log("Array 2 "+realY+" "+realX);
+									drawCharacters.push(new Array(realX, realY));
                             } 
                         }
-
-						// This calculates the real X coordinates on the canvas
-                        x = (x  ) * parseInt(canvasCharacterWidth);
-
-						// This calculates the real Y coordinates on the canvas
-                        y = (y ) * parseInt( canvasCharacterHeight );
-
-						// Again a check, used in conjunction with redrawing the cursor. Or maybe something else. Especially when it's about NOT drawing the background color.
-                        if ( (typeof(transparent)=="undefined") || (transparent==false) ) {
-
-							// This now calculates the position of the character on the image.
-                            var xpos=background;
-                           
-                            while (xpos >= 16) xpos=xpos-16;
-                            // This calculates the position of the block of the image, which has the same characters over and over again with different backgrounds, regarding the y position
-                            //console.log(Math.random()+"background:"+background);
-                            var ypos = Math.floor(background/16);
-                            ///console.log(Math.random()+"ypos:"+ypos);
-                          
-                            var myasciiCode=219;
-                            
-                            var myx = (myasciiCode % 32) * characterWidth+(xpos*256);
-                            var myy = Math.floor(myasciiCode / 32) * characterHeight + (ypos*128);
-
-							
-
-                           if (realY < visibleHeight-1) {
-
-						    	// Then the character from the image gets copied to the canvas
-                            	//alert("1:myx="+myx+" myy="+myy+" x="+x+" y="+y+"CW1:"+characterHeight+" canvasCharacterHeight:"+canvasCharacterHeight);
-								maxRenderedLine=realY;
-                            	ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
-                            	ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y+(visibleHeight*characterHeight), canvasCharacterWidth, canvasCharacterHeight);
-                            } else {
-                            	ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y+(visibleHeight*characterHeight), canvasCharacterWidth, canvasCharacterHeight);
-                            }
-                        }
-                        
-						//if (realY < visibleHeight-1) { // If the screen is inside the area
-						// Now this gets always called!
-                        var xpos=foreground;
-                        while (xpos >= 16) xpos=xpos-16;
-                        var ypos = Math.floor(foreground/16);
-
-						
-                        if (realY < visibleHeight-1) 
-                        { 
-                          var myx = (asciiCode % 32) * characterWidth+(xpos*256);
-                          var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
-                          
-                          // standard drawing
-                          ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
-                          
-                          // now add visibleHeight to it, to draw it below the main image again
-                          y+=(visibleHeight*characterHeight);
-                          
-                          ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
-                          
-                        } else {
-                          
-                          var myx = (asciiCode % 32) * characterWidth+(xpos*256);
-                          var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
-                          y+=(visibleHeight*characterHeight);
-                          ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
-                          
-                          
-                        }
-                        
-                      
                        
-                        
+                        // Working on this:
                         // alert(myx+"/"+x);
 						// As you can see, the calculated character from the image gets copied/drawn to the canvas
 						// ***********************************************************************************************

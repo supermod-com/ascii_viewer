@@ -22,21 +22,17 @@
  */
 var animOffsetX = 0;
 var animOffsetY = 0;
-var scrollDown = 0;
-var scrollUp = 0;
-var scrollLeft = 0;
-var scrollRight = 0;
 
-var bps = 57600;
+var bps = 99999;
 
 /** This is just some fancy speed stuff for timeout. Check if this can get made workable again by changing the value to something real and enabling charsAtOnce below **/
 var charsAtOnce = 99999;
 if (bps == 300)
-    charsAtOnce = 20;
+    charsAtOnce = 10;
 else if (bps == 1200)
-    charsAtOnce = 80;
+    charsAtOnce = 40;
 else if (bps == 2400)
-    charsAtOnce = 160;
+    charsAtOnce = 80;
 else if (bps == 16800)
     charsAtOnce = 6 * 160;
 else if (bps == 19200)
@@ -72,101 +68,15 @@ window.requestAnimFrame = (function() {
 /** This function gets always called **/
 function render() {
 
-	/** This are global variables. When they get set somewhere, i.e. when scrolling occurs, this gets called. This behaves very much like a setTimeout, so the other functions hopefully are not lacking timeouts **/
-    if (scrollDown) { // Scrolling down means the scrollbar scrolls down. The canvas moves up.
-		alert("SCROLLDOWN");
-        while (scrollDown>0) {
-			// Hide the current cursor
-            showCharacter(false);
-        firstLine++;
-        var startX = 0;
-        var startY = canvasCharacterHeight;
-        var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth));
-        var window_innerHeight = ((visibleHeight - scrollBarYShown) * (canvasCharacterHeight));
-
-        var screenWidth = canvasCharacterHeight;
-
-		// Scroll down by copying a whole region
-        var imgData = ctx.getImageData(startX, startY, window_innerWidth - canvasCharacterWidth, window_innerHeight - canvasCharacterHeight - 1);
-        ctx.putImageData(imgData, 0, 0);
-
-        drawLine(visibleHeight - scrollBarYShown + firstLine - 1, (visibleHeight - scrollBarYShown) - 1);
-		// Since the canvas moves 
-        updateScrollbarY(1); // parameter: drawTopBlackside
-        scrollDown--;
-        }
-    } else
-    if (scrollUp) { // Scrolling up means the scrollbar scrolls up. The canvas moves down.
-    	alert("SCROLLUP");
-        while (scrollUp>0) {
-			// Hide the current cursor
-            showCharacter(false);
-        firstLine--;
-        var startX = 0;
-        var startY = 0;
-        var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth)); // Screen width without subtracting any character width, which is not needed
-        var window_innerHeight = (visibleHeight - scrollBarYShown) * (canvasCharacterHeight); // We're scrolling up. So this is 
-
-		// Scroll up by copying a whole region
-        var imgData = ctx.getImageData(startX, startY, window_innerWidth - canvasCharacterWidth, window_innerHeight - canvasCharacterHeight);
-        ctx.putImageData(imgData, 0, canvasCharacterHeight);
-
-		// Now that we have moved everything, we need to redraw the first line. Redrawing the first line means that the first line is not correct.
-        drawLine(firstLine, 0);
-        updateScrollbarY(0); // parameter: drawTopBlackside
-        scrollUp--;
-        }
-    } else
-    if (scrollLeft) {
-    	alert("SCROLLLEFT");
-        while (scrollLeft>0) {
-			 // Hide the current cursor
-             showCharacter(false);
-        leftLine--;
-        var startX = 0;
-
-        var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth));
-        var window_innerHeight = (visibleHeight * (canvasCharacterHeight));
-        console.log("startX:" + startX + " window_innerWidth:" + window_innerWidth);
-		// Move a whole region
-        var imgData = ctx.getImageData(0, 0, window_innerWidth - canvasCharacterWidth - canvasCharacterWidth, window_innerHeight);
-        ctx.putImageData(imgData, canvasCharacterWidth, 0);
-        drawVerticalLine(leftLine, 0);
-
-        updateScrollbarX(0); // parameter: drawLeftBlackside
-        scrollLeft--;
-        }
-    } else
-    if (scrollRight) { // Scrolling right means the scrollbar moves the the right. The canvas moves to the left side.
-    alert("SCROLLRIGHT");
-        while (scrollRight>0) {
-			     // Hide the current cursor
-                 showCharacter(false);
-        leftLine++;
-        var startX = canvasCharacterWidth; // maybe 8 pixel
-
-        var window_innerWidth = ((visibleWidth) * (canvasCharacterWidth));
-        var window_innerHeight = (visibleHeight * (canvasCharacterHeight));
-        console.log("startX:" + startX + " window_innerWidth:" + window_innerWidth);
-		// Move a whole region
-        var imgData = ctx.getImageData(startX, 0, window_innerWidth - startX - startX, window_innerHeight);
-        ctx.putImageData(imgData, 0, 0);
-
-        console.log("visibleWidth+leftLine:" + (visibleWidth + leftLine));
-        console.log("visibleWidth:" + visibleWidth);
-        drawVerticalLine(visibleWidth + leftLine - 2, visibleWidth - 2);
-
-        updateScrollbarX(1); // parameter: drawLeftBlackside
-        scrollRight--;
-        }
-    } else
+	
 	// If doRedraw gets set somewhere, i.e. inside the parser, the whole canvas gets redrawn by drawing characters.
     if (doRedraw) {
 				doClearScreen(false);
         		var lowerFrameStart = visibleWidth*canvasCharacterHeight; // redrawX + visibleXStart
         		
         		console.log("visibleYStart:"+visibleYStart);
-        		var imgData = ctx.getImageData(visibleXStart*characterWidth, (visibleHeight+visibleYStart)*characterHeight, visibleWidth*characterWidth, visibleHeight*characterHeight);
+				// visibleWidth-1 due to scrollbar on the right side, visibleHeight-2 due to scrollbar on the lower side
+        		var imgData = ctx.getImageData(visibleXStart*canvasCharacterWidth, (visibleHeight+visibleYStart+1)*canvasCharacterHeight, (visibleWidth-1)*canvasCharacterWidth, (visibleHeight-3)*canvasCharacterHeight);
         		ctx.putImageData(imgData, 0, 0);
 		
         		doRedraw = false;
@@ -176,29 +86,90 @@ function render() {
         return;
     }
 
+    var charcounter=0;
+	
+	while ( (drawCharacters.length>0) && (charcounter<charsAtOnce) )
+	{
+						charcounter++;
+						var realX = drawCharacters[0][0];
+						var realY = drawCharacters[0][1];
+						
+						var charArray = screenCharacterArray[realY][realX];
+						var asciiCode = charArray[0];
+                        var foreground = charArray[1];
+                        var background = charArray[2];
+						var transparent = charArray[3];
 
-    var counter = 0;
+		// This calculates the real X coordinates on the canvas
+                        var x = realX * parseInt(canvasCharacterWidth);
 
-	// This gets regularly checked
-	// If there's inside the queue for us, it gets worked on
-	// This might start only from time to time. Then hen esapesCursor.parse has finished parsing. Should the escape.js get implemented differently so more often parsing takes place? I think it's okay this way.
-   /* if (globalPos < globalBuffer.length)
-    {
-		var string = "";
-        if ((globalPos < globalBuffer.length) ) { // && (counter < charsAtOnce)) {
+						// This calculates the real Y coordinates on the canvas
+                        var y = realY * parseInt( canvasCharacterHeight );
 
-            counter++;
+						// Again a check, used in conjunction with redrawing the cursor. Or maybe something else. Especially when it's about NOT drawing the background color.
+                        if ( (typeof(transparent)=="undefined") || (transparent==false) ) {
 
-			code = globalBuffer[globalPos++];
-			escapeCode = String.fromCharCode(code);
-			globalString+=escapeCode; // globalString also must get reset!!!
-		}
+							// This now calculates the position of the character on the image.
+                            var xpos=background;
+                           
+                            while (xpos >= 16) xpos=xpos-16;
+                            // This calculates the position of the block of the image, which has the same characters over and over again with different backgrounds, regarding the y position
+                            //console.log(Math.random()+"background:"+background);
+                            var ypos = Math.floor(background/16);
+                            ///console.log(Math.random()+"ypos:"+ypos);
+                          
+                            var myasciiCode=219;
+                            
+                            var myx = (myasciiCode % 32) * characterWidth+(xpos*256);
+                            var myy = Math.floor(myasciiCode / 32) * characterHeight + (ypos*128);
 
-		//alert(globalString.length);
-		
-	}*/
+							if (realY < visibleHeight-1) {
 
+						    	// Then the character from the image gets copied to the canvas
+                            	//alert("1:myx="+myx+" myy="+myy+" x="+x+" y="+y+"CW1:"+characterHeight+" canvasCharacterHeight:"+canvasCharacterHeight);
+								
+                            	ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
+                            	ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y+(visibleHeight*canvasCharacterHeight), canvasCharacterWidth, canvasCharacterHeight);
+                            } else {
+                            	ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y+(visibleHeight*canvasCharacterHeight), canvasCharacterWidth, canvasCharacterHeight);
+                            }
+							
+                        }
+                        
+						//if (realY < visibleHeight-1) { // If the screen is inside the area
+						// Now this gets always called!
+                        var xpos=foreground;
+                        while (xpos >= 16) xpos=xpos-16;
+                        var ypos = Math.floor(foreground/16);
 
+						
+                        if (realY < visibleHeight-1) 
+                        { 
+                          var myx = (asciiCode % 32) * characterWidth+(xpos*256);
+                          var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
+                          
+                          // standard drawing
+                          ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
+                          
+                          // now add visibleHeight to it, to draw it below the main image again
+                          y+=(visibleHeight*canvasCharacterHeight);
+                          
+                          ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
+                          
+                        } else {
+                          
+                          var myx = (asciiCode % 32) * characterWidth+(xpos*256);
+                          var myy = Math.floor(asciiCode / 32) * characterHeight + (ypos*128);
+                          y+=(visibleHeight*canvasCharacterHeight);
+                          ctx.drawImage(codepageImg, myx, myy, characterWidth, characterHeight, x, y, canvasCharacterWidth, canvasCharacterHeight);
+                          
+                          
+                        }
+						maxRenderedLine=realY;
+
+						drawCharacters.shift();
+
+	}
 }
 
 		

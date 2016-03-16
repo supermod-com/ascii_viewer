@@ -27,11 +27,6 @@ function ab2str(buf) {
 
 function Interpreter(url) {
         var http, buffer, pos, escaped, escapeCode;
-
-		
-
-        
-
         http = new XMLHttpRequest();
         http.open("GET", url, true);
 
@@ -39,34 +34,16 @@ function Interpreter(url) {
             
             if (http.readyState === 4) {
                 if (http.status === 200) {
-					globalPos = 0;
-					escapeCode = "";
-					globalEscaped = false;
-                    globalString = ab2str(http.response);
-                    //alert(globalString.length);
-					escapesCursor.parse(globalString, {
+					escapesCursor.parse(ab2str(http.response), // ab2str: new Uint8Array
+					{
                     onEscape    : escapesCursor.escape,
                     onLiteral   : modified_write2,
                     onComplete  : function() { 
-						// Make sure globalBuffer does not get too long. You have read correctly, globalBuffer must get reset. It's not sure this works.
 						
-						globalBuffer = new Uint8Array(); 
-						globalPos = 0; 
-						counter=0; 
-						updateScrollbarY(true); // Show a part of the scrollbar again
-
-						// Now we need to copy the rendered image to a buffer or canvas context. We will use this rendered image copy as a starting point to render
-						// the remaining image as a canvas while the browser is idle.
 						
-						canvas = document.getElementById('ansi');
-						var width = canvas.width;
-						var height = canvas.height;
-						
-
-						backgroundRenderedImage=canvas.getContext("2d").getImageData(0,0,width,height);
-						renderMoreWhenIdle();
-
-
+						updateScrollbarX(true,0); // draw the scrollbar at the bottom, x position = 0 
+						updateScrollbarY(true,0); // Show a part of the scrollbar again
+						console.log("COMPLETE");
 						}
                 	});
 
@@ -86,7 +63,7 @@ function Interpreter(url) {
     
 function modified_write2(text) {
 
-    var CR = 0x0d,
+				var CR = 0x0d,
                 LF = 0x0a,
                 cursor = this,
                 image_data,
@@ -98,12 +75,12 @@ function modified_write2(text) {
                 i,
                 length;
 
-            foreground = this.foreground;
-			if (this.flags & escapesCursor.BRIGHT) {
+            var foreground = escapesCursor.foreground;
+			if (escapesCursor.flags & 0x1) {
 					 foreground=foreground+8;
 			}
 
-            background = this.background;
+            var background = escapesCursor.background;
 
             for (i = 0, length = text.length; i < length; i++) {
                 charcode = text.charCodeAt(i); // & 0xff;  // truncate to 8 bits
@@ -167,33 +144,5 @@ function modified_write2(text) {
             }
         
 
-
-}
-
-function renderMoreWhenIdle() {
-
-    if (debug==false) return;
-	alert("renderMoreWhenIdle interpreter.js "+maxRenderedLine+"/"+screenCharacterArray.length);
-	// This is already happening and must get removed. 
-	// However, this should get used in combination with screenCharacterArray
-	for (var i = maxRenderedLine; i < screenCharacterArray.lenght; i++)
-	{
-     
-	}
-
-	var originalWidth = document.getElementById('ansi').width;
-
-	newCanvas = document.createElement("canvas");
-    
-    newCanvas.setAttribute("width", originalWidth);
-    newCanvas.setAttribute("height", screenCharacterArray.length*16);
-            
-    var newCanvasContext = newCanvas.getContext("2d");
-    newCanvasContext.putImageData(backgroundRenderedImage,0,0);
-	// reenable this if you need the copy of the canvas to be actively visible in the browser  
- 	// document.body.appendChild(newCanvas);
-
-	// Remove this to show default behaviour
-	document.getElementsByTagName("body")[0].style.overflow="auto";
 
 }
