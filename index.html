@@ -74,16 +74,16 @@
             
 			globalString=""; // This variable gets regularly checked in requestanimframe.js
 
-            setCanvasSize(document.getElementById("ansi")); // This creates the canvas for us
+            
 			makeCanvasBlack();
             //setANSICanvasSize(); // app.js
               
             globalContext = document.getElementById("ansi").getContext("2d");
-            doClearScreen(false); // app.js - if the parameter is true, the variable screenCharacterArray gets reset
+            //doClearScreen(false); // app.js - if the parameter is true, the variable screenCharacterArray gets reset
             escapesCursor = escapes({}); // Modified version of escape.js
                 		
                       interpreter = new Interpreter("test.ans"); // Load parse.ans and place its content into screenCharacterArray and 
-                      
+            		  
 					  // Initialize the event listening
                       registerEventListeners(); // app.js - if you want to clean it up you can create a class called App
 					  registerKeyEventListeners(); // app.js

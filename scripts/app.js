@@ -42,7 +42,7 @@
 				doClearScreen(false);
         		var lowerFrameStart = visibleWidth*canvasCharacterHeight; // redrawX + visibleXStart
 				// visibleWidth-1 due to scrollbar on the right side, visibleHeight-2 due to scrollbar on the lower side
-        		var imgData = ctx.getImageData(visibleXStart*canvasCharacterWidth, (visibleHeight+visibleYStart+1)*canvasCharacterHeight, (visibleWidth-1)*canvasCharacterWidth, (visibleHeight-1)*canvasCharacterHeight);
+        		var imgData = ctx.getImageData(visibleXStart*canvasCharacterWidth, (visibleHeight+visibleYStart+1)*canvasCharacterHeight, (renderedMaxX)*canvasCharacterWidth, (visibleHeight-1)*canvasCharacterHeight);
         		ctx.putImageData(imgData, 0, 0);
 		 }
       
@@ -124,7 +124,7 @@
                             movingY=false;
                         }
 
-                        var myScrollbarX = window_innerWidth-canvasCharacterWidth;
+                        var myScrollbarX = ansicanvas.width-canvasCharacterWidth;
 
                         if (mx>myScrollbarX) {
                             movingYStartPos = my;
@@ -294,18 +294,18 @@ makeCanvasBlack();
                 fullCanvasWidth=Math.floor(visibleWidth*8*characterWidthPct);
                 fullCanvasHeight=Math.floor(visibleWidth*8*characterHeightPct);
 
-                canvas.width=fullCanvasWidth;
-                canvas.height=8192; // fullCanvasHeight; - set it to required size after rendering TODO
                 canvasCharacterWidth=Math.floor(8*characterWidthPct);
                 canvasCharacterHeight=Math.floor(16*characterHeightPct);
+                canvas.width=renderedMaxX*(canvasCharacterWidth+1); //fullCanvasWidth;
+                canvas.height=renderedMaxY*canvasCharacterHeight; // fullCanvasHeight; - set it to required size after rendering TODO
         
             } else {
             
                 fullCanvasWidth=window_innerWidth; // Math.floor(width*8*characterWidthPct);
                 fullCanvasHeight=window_innerHeight; // Math.floor(width*8*characterHeightPct);
 
-                canvas.width=fullCanvasWidth;
-                canvas.height=8192; // fullCanvasHeight - we will set it after rendering to the required size TODO
+                canvas.width=renderedMaxX*(canvasCharacterWidth+1);
+                canvas.height=renderedMaxY*canvasCharacterHeight;; // fullCanvasHeight - we will set it after rendering to the required size TODO
 
                 canvasCharacterWidth=Math.floor(window_innerWidth/visibleWidth); // Math.floor(8*characterWidthPct);
                 canvasCharacterHeight=Math.floor(window_innerHeight / visibleHeight); // Math.floor(16*characterHeightPct);

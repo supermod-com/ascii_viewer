@@ -96,7 +96,9 @@ var scrollPosX = 0;
        
        if (typeof(offsetY)=="undefined") offsetY=0;
        
-       var myScrollPosX = (visibleWidth-1  ) * parseInt(canvasCharacterWidth)-4;
+       var myScrollPosX = document.getElementById('ansi').width-parseInt(canvasCharacterWidth)-4;
+       
+       
        var window_innerHeight = (visibleHeight*(canvasCharacterHeight));
        var scrollBarHeight = (visibleHeight/totalVisibleHeight)*window_innerHeight;
     
@@ -152,6 +154,9 @@ var scrollPosX = 0;
        var window_innerWidth = ((visibleWidth)*(canvasCharacterWidth));
        
        var myScrollPosX = (leftLine / totalVisibleWidth)*window_innerWidth;
+       
+       
+       
        var scrollBarWidth = (visibleWidth/totalVisibleWidth)*window_innerWidth;
        if (myScrollPosX+offsetX+scrollBarWidth>window_innerWidth) {
            myScrollPosX=window_innerWidth-offsetX-scrollBarWidth;

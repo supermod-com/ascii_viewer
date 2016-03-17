@@ -23,6 +23,8 @@
  var xStart = 0;
  var yStart = 0;
  var codepageImg;
+ var renderedMaxX=0;
+ var renderedMaxY=0;
 
 /** This is functionality for drawing characters on the canvas using the image map **/
 function Codepage(codepageUrl, callback) {
@@ -86,12 +88,16 @@ function Codepage(codepageUrl, callback) {
                                 drawCharacters.push(new Array(realX, realY));
                                 //console.log("Array "+realY);
                                 
+                                if (renderedMaxX<realX) renderedMaxX=realX;
+ 							    if (renderedMaxY<realY) renderedMaxY=realY;
                             } else
 							// only if storeCharacter is set and storeCharacter==true
                             if ( (typeof(storeCharacter)=="undefined") || (storeCharacter==true) ) {
                                 screenCharacterArray[realY][realX]=charArray; // Store the triple array inside the variable screenCharacterArray
                                 //console.log("Array 2 "+realY+" "+realX);
 									drawCharacters.push(new Array(realX, realY));
+									if (renderedMaxX<realX) renderedMaxX=realX;
+ 							    	if (renderedMaxY<realY) renderedMaxY=realY;
                             } 
                         }
                        
