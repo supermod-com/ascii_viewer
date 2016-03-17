@@ -22,7 +22,6 @@
  */
  var xStart = 0;
  var yStart = 0;
- var maxRenderedLine = 0;
  var codepageImg;
 
 /** This is functionality for drawing characters on the canvas using the image map **/
@@ -34,8 +33,7 @@ function Codepage(codepageUrl, callback) {
             var newCanvas = document.createElement("canvas");
             newCanvas.setAttribute("width", width);
             newCanvas.setAttribute("height", height);
-            //canvasCharacterWidth=Math.floor(width/getDisplayWidth());
-            //canvasCharacterHeight=Math.floor(height/getDisplayHeight());
+            
             return newCanvas;
         }
       
@@ -97,18 +95,7 @@ function Codepage(codepageUrl, callback) {
                             } 
                         }
                        
-                        // Working on this:
-                        // alert(myx+"/"+x);
-						// As you can see, the calculated character from the image gets copied/drawn to the canvas
-						// ***********************************************************************************************
-						// !!! Possible solution: Move this into requestanimframe.js for working with screenCharacterArray
-						// This way, escapesjs.js does not need to get modified and what needs so long for painting is
-						// called in a reularly updated interval. So, parsing of ANSI escape codes takes place in 
-						// interpreter.js->escapesjs
-						// codepagedisplay.js->drawChar
-						// but drawing inside requestanimframe.js !!!
-						// ***********************************************************************************************
-                        
+// Drawing then happens in requestanimrame.js, but only if  finishedRendering  is set to true, inside interpreter.js
 
                         //}
             } // if x >= xStart-1
@@ -172,11 +159,20 @@ function Codepage(codepageUrl, callback) {
         
 
         /** Creates an own instance of a canvas object with its own context **/
-        function generateDisplay(width, height) {
+        /*function generateDisplay(width, height) {
             return createCanvas(fullCanvasWidth, fullCanvasHeight);
-        }
+        }*/
 
-        return { "drawChar": drawChar, "generateDisplay": generateDisplay, "copyChar" : copyChar };
+        return { "drawChar": drawChar };
     };
     
 
+function makeCanvasBlack() {
+
+			var bgstring = "#000000";
+		   ctx = document.getElementById("ansi").getContext("2d");
+		   ctx.fillStyle = bgstring;
+		  
+		   // clears everything
+		   ctx.fillRect(0, 0, document.getElementById('ansi').width, document.getElementById('ansi').height);
+		}

@@ -84,14 +84,15 @@ function render() {
                         var background = charArray[2];
 						var transparent = charArray[3];
 
-		// This calculates the real X coordinates on the canvas
+						// This calculates the real X coordinates on the canvas
                         var x = realX * parseInt(canvasCharacterWidth);
 
 						// This calculates the real Y coordinates on the canvas
                         var y = realY * parseInt( canvasCharacterHeight );
 
 						// Again a check, used in conjunction with redrawing the cursor. Or maybe something else. Especially when it's about NOT drawing the background color.
-                        if ( (typeof(transparent)=="undefined") || (transparent==false) ) {
+						// I really don't know what this is good for, it has to do with the correct coloring... I once knew what this was.
+                      if ( (typeof(transparent)=="undefined") || (transparent==false) ) {
 
 							// This now calculates the position of the character on the image.
                             var xpos=background;
@@ -120,13 +121,10 @@ function render() {
 							
                         }
                         
-						//if (realY < visibleHeight-1) { // If the screen is inside the area
-						// Now this gets always called!
                         var xpos=foreground;
                         while (xpos >= 16) xpos=xpos-16;
                         var ypos = Math.floor(foreground/16);
 
-						
                         if (realY < visibleHeight-1) 
                         { 
                           var myx = (asciiCode % 32) * characterWidth+(xpos*256);
@@ -149,7 +147,6 @@ function render() {
                           
                           
                         }
-						maxRenderedLine=realY;
 
 						drawCharacters.shift();
 

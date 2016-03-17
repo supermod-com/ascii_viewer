@@ -75,6 +75,7 @@
 			globalString=""; // This variable gets regularly checked in requestanimframe.js
 
             setCanvasSize(document.getElementById("ansi")); // This creates the canvas for us
+			makeCanvasBlack();
             //setANSICanvasSize(); // app.js
               
             globalContext = document.getElementById("ansi").getContext("2d");

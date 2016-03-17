@@ -71,7 +71,7 @@
 		   ctx.fillStyle = bgstring;
 		   var window_innerWidth = (visibleWidth*(canvasCharacterWidth));
 		   var window_innerHeight = (visibleHeight*(canvasCharacterHeight));
-      
+			
            ctx.fillRect(0, 0, window_innerWidth-canvasCharacterWidth, window_innerHeight-(canvasCharacterHeight*1));
      
 		   // clears everything
@@ -233,18 +233,16 @@
            
         }*/
  window.onresize = function() { 
-			var bgstring = "#000000";
-		   finishedRendering=false;
-		   ctx = document.getElementById("ansi").getContext("2d");
-		   ctx.fillStyle = bgstring;
-		  
-		   // clears everything
-		   ctx.fillRect(0, 0, document.getElementById('ansi').width, document.getElementById('ansi').height);
+				finishedRendering=false;
+				drawCharacters=new Array();
+				makeCanvasBlack();
 				if(resizeTO) clearTimeout(this.resizeTO);
 				resizeTO = setTimeout(function() {
 					resize_canvas();
-				}, 500);
+				}, 250);
            }
+
+		
 
 		/** This is getting called whenever the user resizes the canvas, to show always the same amount of characters, just with a different width and height **/
         function resize_canvas() {
@@ -261,10 +259,10 @@
 		   // Now set the new canvas dimensions
 console.log("RESIZE SIZE");
 		   setCanvasSize(document.getElementById("ansi")); // This creates the canvas for us
-
+makeCanvasBlack();
 		   // Then draw all characters again
 		   console.log("RESIZE CHARS");
-           drawCharacters=new Array();
+           
            for (var y = 0; y < screenCharacterArray.length; y++)
            {
 			   if (typeof(screenCharacterArray[y])!="undefined") {
