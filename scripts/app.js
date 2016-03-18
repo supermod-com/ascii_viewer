@@ -42,12 +42,15 @@
 				doClearScreen(false);
         		var lowerFrameStart = visibleWidth*canvasCharacterHeight; // redrawX + visibleXStart
 				// visibleWidth-1 due to scrollbar on the right side, visibleHeight-2 due to scrollbar on the lower side
-        		var imgData = ctx.getImageData(visibleXStart*canvasCharacterWidth, (visibleHeight+visibleYStart+1)*canvasCharacterHeight, (renderedMaxX)*canvasCharacterWidth, (visibleHeight-1)*canvasCharacterHeight);
+        		var imgData = ctx.getImageData(visibleXStart*canvasCharacterWidth, (visibleHeight+visibleYStart+1)*canvasCharacterHeight, (renderedMaxX-5)*canvasCharacterWidth, (visibleHeight-1)*canvasCharacterHeight);
         		ctx.putImageData(imgData, 0, 0);
+        		updateScrollbarX(true,0); // draw the scrollbar at the bottom, x position = 0 
+		   		updateScrollbarY(true,0); // Show a part of the scrollbar again
+
 		 }
       
 	  // This gets called whenever the scrollbar position changes from scrollbar.js, from inside the even listeners
-        function redrawScreen() {
+        function redrawScreenMouseUpdate() {
              var window_innerWidth = (visibleWidth*(canvasCharacterWidth));
              var window_innerHeight = (visibleHeight*(canvasCharacterHeight));
             
@@ -57,7 +60,9 @@
              visibleYStart = Math.floor((scrollPosY/window_innerHeight)*height);
              var visibleYStop = visibleYStart + visibleHeight;
              animOffsetX=visibleXStart;
+             firstLine=visibleYStart;
              animOffsetY=visibleYStart;
+             leftLine =visibleXStart;
              
              doRedraw();
         }
@@ -162,8 +167,10 @@
                        var mouse = getMousePos(ansicanvas, e);
                        var mx = mouse.x;
                        var my = mouse.y;
-                       updateScrollbarY(2, my-movingYStartPos);
-                       redrawScreen();
+                       scrollPosY=my;
+          
+            
+                       redrawScreenMouseUpdate();
                    
                    } else
                    if (movingX==true) 
@@ -171,8 +178,8 @@
                        var mouse = getMousePos(ansicanvas, e);
                        var mx = mouse.x;
                        var my = mouse.y;
-                       updateScrollbarX(2, mx-movingXStartPos);
-                       redrawScreen();
+                       scrollPosX=mx;
+                       redrawScreenMouseUpdate();
                    
                    } else
                    
@@ -197,12 +204,8 @@
                     var mx = mouse.x;
                     var my = mouse.y;                
             
-            if (movingY==true) {
-                
-            } else if (movingX==true) {
-                
-            }
             
+               
         }
         
 		
@@ -276,8 +279,6 @@ makeCanvasBlack();
 			   }
            }
 		   finishedRendering=true;
-		   updateScrollbarX(true,0); // draw the scrollbar at the bottom, x position = 0 
-		   updateScrollbarY(true,0); // Show a part of the scrollbar again
 		   console.log("NOW IT SHOULD REDRAW");
         }
         
