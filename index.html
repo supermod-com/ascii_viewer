@@ -29,7 +29,7 @@
     <title>ascii stripped</title>
 	<!-- This contains functionality to draw characters on the canvas -->
     <script src="scripts/codepagedisplay.js" type="text/javascript"></script>
-   <!-- contains the actions in regard with scrolling, called by the event listeners in app.js -->
+    <!-- contains the actions in regard with scrolling, called by the event listeners in app.js -->
     <script src="scripts/scrollbar.js"></script>
     <!-- contains most of the variables and event listeners -->
     <script src="scripts/app.js"></script>
@@ -53,8 +53,8 @@
     }
     </style>
     <script>
-       var debug=false;
-		/*
+        var debug=false;
+        /*
         var JAVASCRIPT_TEXT_DROP_HERE_TO_UPLOAD="Drop files here to upload";
         var JAVASCRIPT_TEXT_UPLOAD_A_FILE="Upload a file"; 
         var JAVASCRIPT_TEXT_CANCEL="Cancel";
@@ -67,29 +67,28 @@
         var JAVASCRIPT_TEXT_ON_LEAVE="The files are being uploaded, if you leave now the upload will be cancelled.";*/
 
   
-   window.onload = function() {
-        
-		// Initialize the functionality to draw characters on the canvas, by using an image-map with the given filename (256 colors)
-        codepage = new Codepage("assets/CO_437_8x16vga.png", function() { // codepagedisplay.js
+        window.onload = function() {
             
-			globalString=""; // This variable gets regularly checked in requestanimframe.js
+        	// Initialize the functionality to draw characters on the canvas, by using an image-map with the given filename (256 colors)
+            codepage = new Codepage("assets/CO_437_8x16vga.png", function() { // codepagedisplay.js
+                
+        		globalString=""; // This variable gets regularly checked in requestanimframe.js
 
-            
-			makeCanvasBlack();
-            //setANSICanvasSize(); // app.js
-              
-            globalContext = document.getElementById("ansi").getContext("2d");
-            //doClearScreen(false); // app.js - if the parameter is true, the variable screenCharacterArray gets reset
-            escapesCursor = escapes({}); // Modified version of escape.js
-                		
-                      interpreter = new Interpreter("test.ans"); // Load parse.ans and place its content into screenCharacterArray and 
-            		  
-					  // Initialize the event listening
-                      registerEventListeners(); // app.js - if you want to clean it up you can create a class called App
-					  registerKeyEventListeners(); // app.js
-            }); 
-            
-    }
+                
+        		makeCanvasBlack();
+                //setANSICanvasSize(); // app.js
+                  
+                globalContext = document.getElementById("ansi").getContext("2d");
+                //doClearScreen(false); // app.js - if the parameter is true, the variable screenCharacterArray gets reset
+                escapesCursor = escapes({}); // Modified version of escape.js
+                    		
+                interpreter = new Interpreter("test.ans"); // Load parse.ans and place its content into screenCharacterArray and 
+
+                // Initialize the event listening
+                registerEventListeners(); // app.js - if you want to clean it up you can create a class called App
+                registerKeyEventListeners(); // app.js
+            });
+        }
         
    
     </script>
