@@ -40,7 +40,7 @@ function Interpreter(url) {
                     onLiteral   : modified_write2,
                     onComplete  : function() {
 						console.log("COMPLETE");
-						setCanvasSize(document.getElementById("ansi")); // This creates the canvas for us          
+						setCanvasSize(document.getElementById("ansi")); // This creates the canvas for us
 						finishedRendering=true;						
 						updateScrollbarX(true,0); // draw the scrollbar at the bottom, x position = 0 
 						updateScrollbarY(true,0); // Show a part of the scrollbar again
